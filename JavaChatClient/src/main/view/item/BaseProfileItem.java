@@ -31,10 +31,18 @@ public abstract class BaseProfileItem extends JPanel {
 	private JButton btnProfileImg; // 프로필 사진
 	private JLabel lbluserName; // 유저 닉네임
 	
+	protected String userName; // user.getData() 문자열을 "/"으로 자른 0번째 데이터
+	protected String dataMsg; // .. 1번째 데이터
+	
+	
 
 	public BaseProfileItem(ChatMsg user) {
 		//this.parent = parent;
 		this.user = user;
+		
+		String[] str = user.getData().split("/");
+		userName = str[0]; 
+		dataMsg = str[1];
 
 		setLayout(new FlowLayout());
 		setBackground(resources.Colors.MAIN_BG_COLOR);
@@ -55,7 +63,7 @@ public abstract class BaseProfileItem extends JPanel {
 		add(btnProfileImg);
 
 		// 유저 닉네임
-		lbluserName = new JLabel(user.getId());
+		lbluserName = new JLabel(userName);
 		lbluserName.setBorder(border);
 		lbluserName.setFont(resources.Fonts.MAIN_BOLD_16);
 		lbluserName.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
@@ -75,9 +83,9 @@ public abstract class BaseProfileItem extends JPanel {
 	}
 	
 	public abstract void SendObject(ChatMsg cm);
-	
-	public String getUserName() {
-		return user.getId();
-	}
 
+	public String getUserName() {
+		return this.userName;
+	}
+	
 }

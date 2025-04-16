@@ -178,7 +178,7 @@ public class ChatClientMain extends JFrame {
 		friendViewBtn.setFont(resources.Fonts.MAIN_BOLD_15);
 		friendViewBtn.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
 		friendViewBtn.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		friendViewBtn.setSelected(true);
+		//friendViewBtn.setSelected(true);
 		friendViewBtn.addActionListener(new MyActionListener());
 		bottomPanel.add(friendViewBtn);
 
@@ -285,9 +285,9 @@ public class ChatClientMain extends JFrame {
 						// initFriendView();
 						friendViewPanel.setMyProfile(cm.getId(), cm.getProfileImg_ori());
 						
-						// 친구 리스트 요청
-						SendObject(new ChatMsg(UserName, "700", "all"));
-						
+						// 친구 리스트 요청 (all : 다른 유저들도 내가 로그인한 사실을 알도록 바로 화면 업데이트)
+						SendObject(new ChatMsg(UserName, "700", "all")); // 친구 화면 리스트
+						SendObject(new ChatMsg(UserName, "600", "all")); // 사용자 화면 리스트
 						// ??
 						SendObject(new ChatMsg(UserName, "830", "room list"));//?
 						
@@ -355,22 +355,33 @@ public class ChatClientMain extends JFrame {
 						imgF.setVisible(true);
 						break;
 
-					case "600": // 접속자 목록에 출력할 모든 접속자들의 profile 정보를 하나씩 받음
-						userViewPanel.addUser(cm);
+					case "600": // 사용자 목록에 출력할 모든 사용자들의 profile 정보를 하나씩 받음
+						
+						if(cm.getData().equals("refresh")) { // 사용자 리스트 초기화 후 다시 사용자 데이터 요청
+							userViewPanel.initUserList();
+							SendObject(new ChatMsg(UserName, "600", ""));
+							
+						}else {
+							userViewPanel.addUser(cm);
+						}
 						
 						break;
 
-					case "610": // 접속자 목록 새로고침
-						//initUserList();
-						SendObject(new ChatMsg(UserName, "600", "User list"));
-						break;
+//					case "610": // 접속자 목록 새로고침
+//						//initUserList();
+//						SendObject(new ChatMsg(UserName, "600", "User list"));
+//						break;
 
 					case "700": // 친구 목록에 출력할 관련 접속자들의 profile 정보를 하나씩 받음
 						
-						
+						if(cm.getData().equals("refresh")) {
+							friendViewPanel.initFriendList();
+							SendObject(new ChatMsg(UserName, "700", ""));
+						}else {
+							friendViewPanel.addFriend(cm);
+						}
 						
 						//((FriendViewPanel) friendViewPanel).addFriend(new FriendProfileItem(friendViewPanel, cm));
-						friendViewPanel.addFriend(cm);
 
 						break;
 
@@ -686,56 +697,46 @@ public class ChatClientMain extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			JButton b = (JButton) e.getSource();
 
-			if (b.getText().matches(resources.Strings.FRIEND)) {
-
-//				friendListScrollPanel = new JPanel(new GridBagLayout());
-//				friendListScrollPanel.setBackground(backColor);
-//				GridBagConstraints gbc = new GridBagConstraints();
-//				gbc.gridwidth = GridBagConstraints.REMAINDER;
-//				gbc.weightx = 1;
-//				gbc.weighty = 1;
-//				JPanel p = new JPanel();
-//				p.setBackground(backColor);
-//				friendListScrollPanel.add(p, gbc);
-//				friendListScrollPane.setViewportView(friendListScrollPanel);
-				//friendListIdx = 0;
+			friendViewBtn.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+			chatListViewBtn.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+			userListViewBtn.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+			settingViewBtn.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+			
+			if (b.getText().equals(resources.Strings.FRIEND)) {
 				
 				
 				friendViewPanel.initFriendList();
 
-				ChatMsg cm = new ChatMsg(UserName, "700", "friendList"); // 친구 list 출력 요청
+				ChatMsg cm = new ChatMsg(UserName, "700", "refresh"); // 친구 list 출력 요청
 				SendObject(cm);
 				//friendViewPanel.initFriendList();
 				viewPanel = friendViewPanel;
 				
-			} else if (b.getText().matches(resources.Strings.CHATTING)) {
+			} else if (b.getText().equals(resources.Strings.CHATTING)) {
 
 				// 채팅 list 출력
 				printChatRoomList();
 
 				viewPanel = chatListViewPanel;
 
-			} else if (b.getText().matches(resources.Strings.USER)) {
+			} else if (b.getText().equals(resources.Strings.USER)) {
 
 
 				// user list 요청
 				userViewPanel.initUserList();
 
-				ChatMsg cm = new ChatMsg(UserName, "600", "userList");
+				ChatMsg cm = new ChatMsg(UserName, "600", "refresh");
 				SendObject(cm);
 
 				viewPanel = userViewPanel;
 
-			} else if (b.getText().matches(resources.Strings.SETTING)) {
+			} else if (b.getText().equals(resources.Strings.SETTING)) {
 
 				viewPanel = settingViewPanel;
 			}
 
-			friendViewBtn.setBackground(resources.Colors.MAIN_BG_COLOR);
-			chatListViewBtn.setBackground(resources.Colors.MAIN_BG_COLOR);
-			userListViewBtn.setBackground(resources.Colors.MAIN_BG_COLOR);
-			settingViewBtn.setBackground(resources.Colors.MAIN_BG_COLOR);
-			b.setBackground(resources.Colors.MAIN_DARK_BLUE_COLOR);
+			
+			b.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
 			bottomPanel.repaint();
 			
 			friendViewPanel.setVisible(false);
@@ -831,66 +832,66 @@ public class ChatClientMain extends JFrame {
 //
 //	}
 
-	private void printUserProfile(ChatMsg user) {
-
-		JPanel panel = new JPanel(new FlowLayout());
-		panel.setBackground(backColor);
-
-		JButton profileImgBtn = new JButton();
-		profileImgBtn.setIcon(user.getProfileImg_resized());
-		profileImgBtn.setPreferredSize(new Dimension(50, 50));
-		panel.add(profileImgBtn);
-
-		JLabel lbluserName = new JLabel(" " + user.getId());
-		lbluserName.setFont(new Font("맑은 고딕", Font.BOLD, 16));
-		lbluserName.setForeground(darkBlueColor);
-		lbluserName.setPreferredSize(new Dimension(115, 30));
-		panel.add(lbluserName);
-
-		if (user.getId().matches(this.UserName)) {
-			JButton btn = new JButton("");
-			btn.setBackground(backColor);
-			btn.setBorderPainted(false);
-			btn.setPreferredSize(new Dimension(120, 25));
-			panel.add(btn);
-		} else if (!user.getId().matches(this.UserName)) {
-			JButton friendBtn = new JButton();
-			friendBtn.setFont(new Font("맑은 고딕", Font.BOLD, 10));
-			friendBtn.setForeground(darkBlueColor);
-			friendBtn.setBackground(Color.WHITE);
-			friendBtn.setPreferredSize(new Dimension(120, 25));
-
-			if (user.getData().matches("friend")) { // 친구
-				friendBtn.setText("친구");
-				friendBtn.setBackground(backColor);
-			} else if (user.getData().matches("wait")) { // 친구x, 요청o
-				friendBtn.setText("친구 요청 보냄");
-				friendBtn.setBackground(backColor);
-			} else if (user.getData().matches("none")) { // 친구x, 요청x
-				friendBtn.setText("친구 요청 보내기");
-				friendBtn.setEnabled(true);
-				friendBtn.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						ChatMsg f = new ChatMsg(UserName, "701", user.getId());
-						SendObject(f);
-						friendBtn.setText("친구 요청 보냄");
-						friendBtn.setBackground(backColor);
-					}
-				});
-			}
-			panel.add(friendBtn);
-		}
-
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		userListScrollPanel.add(panel, gbc, userListIdx);
-		userListIdx++;
-		userListScrollPanel.revalidate();
-		userListScrollPanel.repaint();
-
-	}
+//	private void printUserProfile(ChatMsg user) {
+//
+//		JPanel panel = new JPanel(new FlowLayout());
+//		panel.setBackground(backColor);
+//
+//		JButton profileImgBtn = new JButton();
+//		profileImgBtn.setIcon(user.getProfileImg_resized());
+//		profileImgBtn.setPreferredSize(new Dimension(50, 50));
+//		panel.add(profileImgBtn);
+//
+//		JLabel lbluserName = new JLabel(" " + user.getId());
+//		lbluserName.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+//		lbluserName.setForeground(darkBlueColor);
+//		lbluserName.setPreferredSize(new Dimension(115, 30));
+//		panel.add(lbluserName);
+//
+//		if (user.getId().matches(this.UserName)) {
+//			JButton btn = new JButton("");
+//			btn.setBackground(backColor);
+//			btn.setBorderPainted(false);
+//			btn.setPreferredSize(new Dimension(120, 25));
+//			panel.add(btn);
+//		} else if (!user.getId().matches(this.UserName)) {
+//			JButton friendBtn = new JButton();
+//			friendBtn.setFont(new Font("맑은 고딕", Font.BOLD, 10));
+//			friendBtn.setForeground(darkBlueColor);
+//			friendBtn.setBackground(Color.WHITE);
+//			friendBtn.setPreferredSize(new Dimension(120, 25));
+//
+//			if (user.getData().matches("friend")) { // 친구
+//				friendBtn.setText("친구");
+//				friendBtn.setBackground(backColor);
+//			} else if (user.getData().matches("wait")) { // 친구x, 요청o
+//				friendBtn.setText("친구 요청 보냄");
+//				friendBtn.setBackground(backColor);
+//			} else if (user.getData().matches("none")) { // 친구x, 요청x
+//				friendBtn.setText("친구 요청 보내기");
+//				friendBtn.setEnabled(true);
+//				friendBtn.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						ChatMsg f = new ChatMsg(UserName, "701", user.getId());
+//						SendObject(f);
+//						friendBtn.setText("친구 요청 보냄");
+//						friendBtn.setBackground(backColor);
+//					}
+//				});
+//			}
+//			panel.add(friendBtn);
+//		}
+//
+//		GridBagConstraints gbc = new GridBagConstraints();
+//		gbc.gridwidth = GridBagConstraints.REMAINDER;
+//		gbc.weightx = 1;
+//		gbc.fill = GridBagConstraints.HORIZONTAL;
+//		userListScrollPanel.add(panel, gbc, userListIdx);
+//		userListIdx++;
+//		userListScrollPanel.revalidate();
+//		userListScrollPanel.repaint();
+//
+//	}
 
 	public void printChatRoomList() { // 채팅방 리스트 출력
 

@@ -36,7 +36,7 @@ public class UserViewPanel extends BaseViewPanel {
 	private int userListIdx = 0;
 	
 
-	private Vector<UserProfileItem> UserVec = new Vector<UserProfileItem>();
+	//private Vector<UserProfileItem> UserVec = new Vector<UserProfileItem>();
 	
 
 	/**
@@ -77,7 +77,7 @@ public class UserViewPanel extends BaseViewPanel {
 		
 	
 		userListScrollPane = new JScrollPane(userListPanel);
-		userListScrollPane.setBounds(10, 50, 325, 370);
+		userListScrollPane.setBounds(10, 50, 325, 460);
 		userListScrollPane.setBackground(resources.Colors.MAIN_BG_COLOR);
 		// userListScrollPane.setPreferredSize(new Dimension(300, 330));
 		add(userListScrollPane);
@@ -90,7 +90,7 @@ public class UserViewPanel extends BaseViewPanel {
 public void addUser(ChatMsg cm) {
 		
 		UserProfileItem user = new UserProfileItem(this, cm);
-		UserVec.add(user);
+		//UserVec.add(user);
 		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -112,11 +112,11 @@ public void addUser(ChatMsg cm) {
 		userListPanel.remove(user); // idx--??
 		userListPanel.revalidate();
 		userListPanel.repaint();
-		
-		for(UserProfileItem u : UserVec) {
-			if(u.getUserName().matches(user.getUserName()));
-			UserVec.remove(u);
-		}
+//		
+//		for(UserProfileItem u : UserVec) {
+//			if(u.getUserName().equals(user.getUserName()));
+//			UserVec.remove(u);
+//		}
 	}
 	
 	public void initUserList() { // 나중에 백터로 대체

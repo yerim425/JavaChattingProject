@@ -36,7 +36,7 @@ public class FriendViewPanel extends BaseViewPanel {
 	
 	private int friendListIdx = 0;
 	
-	private Vector<FriendProfileItem> FriendVec = new Vector<FriendProfileItem>();
+	//private Vector<FriendProfileItem> FriendVec = new Vector<FriendProfileItem>();
 
 	/**
 	 * Create the panel.
@@ -128,14 +128,14 @@ public class FriendViewPanel extends BaseViewPanel {
 		
 	}
 	
-	public void setFriendList(ArrayList<ChatMsg> friends) {
-		
-	}
+//	public void setFriendList(ArrayList<ChatMsg> friends) {
+//		
+//	}
 	
 	public void addFriend(ChatMsg cm) {
 		
 		FriendProfileItem friend = new FriendProfileItem(this, cm);
-		FriendVec.add(friend);
+//		FriendVec.add(friend);
 		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
@@ -158,11 +158,11 @@ public class FriendViewPanel extends BaseViewPanel {
 		friendListPanel.remove(friend); // idx--??
 		friendListPanel.revalidate();
 		friendListPanel.repaint();
-		
-		for(FriendProfileItem f : FriendVec) {
-			if(f.getUserName().matches(friend.getUserName()));
-			FriendVec.remove(f);
-		}
+//		
+//		for(FriendProfileItem f : FriendVec) {
+//			if(f.getUserName().equals(friend.getUserName()));
+//			FriendVec.remove(f);
+//		}
 	}
 	
 	public void initFriendList() { // 목록 재세팅을 위해 전부 삭제
