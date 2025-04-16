@@ -51,6 +51,7 @@ import javax.swing.text.AttributeSet.FontAttribute;
 
 import data.ChatMsg;
 import data.ChatRoom;
+import main.view.ChatRoomViewPanel;
 import main.view.FriendViewPanel;
 import main.view.ImgFrame;
 import main.view.SettingViewPanel;
@@ -61,8 +62,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import main.chat.ChatClientChat;
 
 //import JavaObjClientView.ImageSendAction;
 //import JavaObjClientView.ListenNetwork;
@@ -86,7 +85,7 @@ public class ChatClientMain extends JFrame {
 	private JPanel bottomPanel; // [친구 채팅 접속자, 설정] 바텀 버튼 패널
 
 	private FriendViewPanel friendViewPanel; // 친구 화면
-	private JPanel chatListViewPanel; // 채팅 화면
+	private ChatRoomViewPanel chatViewPanel; // 채팅 화면
 	private UserViewPanel userViewPanel; // 사용자 화면
 	private SettingViewPanel settingViewPanel; // 설정 화면
 
@@ -210,14 +209,16 @@ public class ChatClientMain extends JFrame {
 		setContentPane(contentPane);
 
 		// view create
-		initChatListView();
+		//initChatListView();
 		// initFriendView();
 		
 		//repaint();
 		
 		friendViewPanel = new FriendViewPanel(this, UserName);
+		chatViewPanel = new ChatRoomViewPanel(this, UserName);
 		userViewPanel = new UserViewPanel(this, UserName);
 		settingViewPanel = new SettingViewPanel(this, UserName);
+		
 		//initUserListView();
 		// initSettingView();
 		
@@ -289,7 +290,7 @@ public class ChatClientMain extends JFrame {
 						SendObject(new ChatMsg(UserName, "700", "all")); // 친구 화면 리스트
 						SendObject(new ChatMsg(UserName, "600", "all")); // 사용자 화면 리스트
 						// ??
-						SendObject(new ChatMsg(UserName, "830", "room list"));//?
+						//SendObject(new ChatMsg(UserName, "830", "room list"));//?
 						
 						break;
 					case "200": // chat message
@@ -425,22 +426,13 @@ public class ChatClientMain extends JFrame {
 						break;
 
 					case "820": // 채팅방 만들기 위한 친구 리스트
-						if (!cm.getData().equals("")) {
+						if (!(cm.getData().equals("") || cm.getData().equals(null))) {
 							String[] userList = cm.getData().split(" ");
-							for (int i = 0; i < userList.length; i++) {
-								JCheckBox cb = new JCheckBox(userList[i], false);
-								cb.setFont(new Font("맑은 고딕", Font.PLAIN, 15));
-								cb.setBounds(5, checkBoxPosY, 80, 25);
-								checkBoxListPanel.add(cb);
-								checkBoxVec.add(cb);
-								checkBoxPosY += 30;
-								checkBoxListPanel.revalidate();
-								checkBoxListPanel.repaint();
-							}
+							chatViewPanel.createMakeRoomView(userList);
 						}
 						break;
 
-					case "830": // 채팅 리스트 불러오기
+					case "830": // 채팅방 리스트 하나씩 불러오기(End : 끝 -> 채팅방 리스트 화면에 출력)
 						ChatRoom room = new ChatRoom(cm.getRoomId(), cm.getUserList());
 						String[] data = cm.getData().split("/");
 						room.setLastTime(data[0]);
@@ -582,49 +574,49 @@ public class ChatClientMain extends JFrame {
 //		friendListIdx = 0;
 //	}
 
-	private void initChatListView() {
-		chatListViewPanel = new JPanel();
-		chatListViewPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		chatListViewPanel.setBounds(0, 0, 335, 400);
-		chatListViewPanel.setBackground(backColor);
-		chatListViewPanel.setLayout(null);
-		chatListViewPanel.setVisible(false);
-		contentPane.add(chatListViewPanel);
-
-		JLabel lblchatList = new JLabel(" 채팅방 목록");
-		lblchatList.setFont(new Font("맑은 고딕", Font.BOLD, 16));
-		lblchatList.setForeground(Color.white);
-		lblchatList.setBackground(blueColor);
-		lblchatList.setOpaque(true);
-		lblchatList.setBounds(10, 10, 235, 25);
-		chatListViewPanel.add(lblchatList);
-
-		JButton makeRoomBtn = new JButton("<HTML><body style='text-align:center;'>채팅방<br>만들기</body></HTML>");
-		makeRoomBtn.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-		makeRoomBtn.setBackground(Color.WHITE);
-		makeRoomBtn.setForeground(blueColor);
-		makeRoomBtn.setOpaque(true);
-		makeRoomBtn.setBounds(247, 5, 72, 43);
-		makeRoomBtn.addActionListener(new ActionListener() { // 채팅방 만들기
-			public void actionPerformed(ActionEvent e) {
-
-				CheckBoxFrame cbView = new CheckBoxFrame();
-				cbView.setVisible(true);
-
-				checkBoxVec.removeAllElements();
-				checkBoxPosY = 5;
-				ChatMsg fl = new ChatMsg(UserName, "820", "friend list"); // 체크 박스로 리스트 출력할 친구 리스트 요청
-				SendObject(fl);
-			}
-		});
-		chatListViewPanel.add(makeRoomBtn);
-
-		chatListScrollPanel = new JPanel(new GridBagLayout());
-		chatListScrollPane = new JScrollPane(chatListScrollPanel);
-		chatListScrollPane.setBounds(10, 50, 320, 350);
-		chatListScrollPane.setBackground(backColor);
-		chatListViewPanel.add(chatListScrollPane);
-	}
+//	private void initChatListView() {
+//		chatViewPanel = new ChatViewPanel(this, UserName, friendNameVec);
+//		chatViewPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+//		chatViewPanel.setBounds(0, 0, 335, 400);
+//		chatViewPanel.setBackground(backColor);
+//		chatViewPanel.setLayout(null);
+//		chatViewPanel.setVisible(false);
+//		contentPane.add(chatViewPanel);
+//
+//		JLabel lblchatList = new JLabel(" 채팅방 목록");
+//		lblchatList.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+//		lblchatList.setForeground(Color.white);
+//		lblchatList.setBackground(blueColor);
+//		lblchatList.setOpaque(true);
+//		lblchatList.setBounds(10, 10, 235, 25);
+//		chatViewPanel.add(lblchatList);
+//
+//		JButton makeRoomBtn = new JButton("<HTML><body style='text-align:center;'>채팅방<br>만들기</body></HTML>");
+//		makeRoomBtn.setFont(new Font("맑은 고딕", Font.BOLD, 13));
+//		makeRoomBtn.setBackground(Color.WHITE);
+//		makeRoomBtn.setForeground(blueColor);
+//		makeRoomBtn.setOpaque(true);
+//		makeRoomBtn.setBounds(247, 5, 72, 43);
+//		makeRoomBtn.addActionListener(new ActionListener() { // 채팅방 만들기
+//			public void actionPerformed(ActionEvent e) {
+//
+//				CheckBoxFrame cbView = new CheckBoxFrame();
+//				cbView.setVisible(true);
+//
+//				checkBoxVec.removeAllElements();
+//				checkBoxPosY = 5;
+//				ChatMsg fl = new ChatMsg(UserName, "820", "friend list"); // 체크 박스로 리스트 출력할 친구 리스트 요청
+//				SendObject(fl);
+//			}
+//		});
+//		chatViewPanel.add(makeRoomBtn);
+//
+//		chatListScrollPanel = new JPanel(new GridBagLayout());
+//		chatListScrollPane = new JScrollPane(chatListScrollPanel);
+//		chatListScrollPane.setBounds(10, 50, 320, 350);
+//		chatListScrollPane.setBackground(backColor);
+//		chatViewPanel.add(chatListScrollPane);
+//	}
 
 //	private void initUserListView() {
 //		userViewPanel = new JPanel();
@@ -715,9 +707,14 @@ public class ChatClientMain extends JFrame {
 			} else if (b.getText().equals(resources.Strings.CHATTING)) {
 
 				// 채팅 list 출력
-				printChatRoomList();
+				//printChatRoomList();
+				
+				chatViewPanel.initChatRoomList();
+				
+				ChatMsg cm = new ChatMsg(UserName, "830", "chat room list");
+				SendObject(cm);
 
-				viewPanel = chatListViewPanel;
+				viewPanel = chatViewPanel;
 
 			} else if (b.getText().equals(resources.Strings.USER)) {
 
@@ -740,7 +737,7 @@ public class ChatClientMain extends JFrame {
 			bottomPanel.repaint();
 			
 			friendViewPanel.setVisible(false);
-			chatListViewPanel.setVisible(false);
+			chatViewPanel.setVisible(false);
 			userViewPanel.setVisible(false);
 			settingViewPanel.setVisible(false);
 			viewPanel.setVisible(true);

@@ -700,7 +700,7 @@ public class ChatServer extends JFrame {
 						for (int i = 0; i < user_vc.size(); i++) { // 모든 유저들에 대해서
 							UserService user = (UserService) user_vc.elementAt(i);
 							if (cm.getData().contains(user.UserName)) { // 초대한 유저와 초대된 유저들만
-								ChatMsg mr = new ChatMsg(user.UserName, "800", "make room");
+								ChatMsg mr = new ChatMsg(user.UserName, "800", "create room");
 								mr.setRoomId(cr.getRoomId());
 								mr.setUserList(cr.getUserList());
 								if (user.UserStatus.matches("O"))
@@ -748,7 +748,7 @@ public class ChatServer extends JFrame {
 						ChatMsg fl = new ChatMsg(UserName, "820", friendList);
 						WriteOneObject(fl);
 					} else if (cm.getCode().equals("830")) {
-						// 채팅 리스트 보내기
+						// 채팅방 리스트 보내기
 						if (ChatRoomVec.size() != 0) {
 							for (int i = 0; i < ChatRoomVec.size(); i++) {
 								ChatRoom cr = ChatRoomVec.elementAt(i);

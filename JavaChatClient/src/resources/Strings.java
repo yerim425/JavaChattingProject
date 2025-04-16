@@ -14,5 +14,6 @@ public class Strings {
 	public static final String ME = "나";
 	public static final String SELECT_IMAGE = "이미지 선택";
 	public static final String USER_LIST = "사용자 목록";
+	public static final String CHAT_ROOM_LIST = "채팅방 목록";
 	
 }

@@ -27,8 +27,6 @@ public class UserViewPanel extends BaseViewPanel {
 	
 	
 	private JLabel lblUserList; // "사용자 목록"
-	//private JButton btnProfileImg; // 내 프로필 이미지 버튼
-	//private JLabel lblUserName; // 내 닉네임
 	
 	private JScrollPane userListScrollPane; // 사용자 리스트 스크롤
 	private JPanel userListPanel; // 사용자 리스트 패널
@@ -70,7 +68,7 @@ public class UserViewPanel extends BaseViewPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.weightx = 1;
-		gbc.weighty = 1;
+		gbc.weighty = 0; // 1
 		JPanel p = new JPanel();
 		p.setBackground(resources.Colors.MAIN_BG_COLOR);
 		userListPanel.add(p, gbc);
@@ -95,6 +93,7 @@ public void addUser(ChatMsg cm) {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.weightx = 1;
+		//gbc.weightx = 0;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		
 		//friendListPanel.add(((JPanel)friend), gbc, friendListIdx);

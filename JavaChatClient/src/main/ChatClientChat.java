@@ -1,7 +1,7 @@
 /*
  * java chatting view frame
  */
-package main.chat;
+package main;
 
 import java.awt.FileDialog;
 import java.awt.event.*;
@@ -48,7 +48,6 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import data.ChatMsg;
-import main.ChatClientMain;
 
 
 

@@ -29,7 +29,7 @@ public abstract class BaseViewPanel extends JPanel {
 
 	
 	// 프로필에 적용할 사진 resize
-	public ImageIcon profileImgResized(ImageIcon ori_icon, int size) {
+	public ImageIcon imageResized(ImageIcon ori_icon, int size) {
 		Image img = ori_icon.getImage();
 		int width = ori_icon.getIconWidth();
 		int height = ori_icon.getIconHeight();

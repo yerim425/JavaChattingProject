@@ -64,7 +64,7 @@ public class FriendViewPanel extends BaseViewPanel {
 		btnProfileImg = new JButton();
 		btnProfileImg.setBounds(10, 45, 50, 50); // 38
 		btnProfileImg.setPreferredSize(new Dimension(50, 50));
-		btnProfileImg.setIcon(profileImgResized(this.profileImg, resources.Dimens.PROFILE_IMG_SIZE));
+		btnProfileImg.setIcon(imageResized(this.profileImg, resources.Dimens.PROFILE_IMG_SIZE));
 		add(btnProfileImg);
 
 		btnProfileImg.addActionListener(new ActionListener() { // 버튼 리스너
@@ -76,7 +76,7 @@ public class FriendViewPanel extends BaseViewPanel {
 				ImageIcon selectImg = new ImageIcon(fd.getDirectory() + fd.getFile());
 				FriendViewPanel.this.profileImg = selectImg;
 				// UserProfileImg_resized = profileImgResize(UserProfileImg_ori, 50);
-				FriendViewPanel.this.profileImg_resized = profileImgResized(selectImg, resources.Dimens.PROFILE_IMG_SIZE);
+				FriendViewPanel.this.profileImg_resized = imageResized(selectImg, resources.Dimens.PROFILE_IMG_SIZE);
 				btnProfileImg.setIcon(FriendViewPanel.this.profileImg_resized);
 
 				ChatMsg obcm = new ChatMsg(FriendViewPanel.this.userName, "500", "change profile img"); // 프로필 사진 변경
@@ -110,7 +110,7 @@ public class FriendViewPanel extends BaseViewPanel {
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridwidth = GridBagConstraints.REMAINDER;
 		gbc.weightx = 1;
-		gbc.weighty = 1; 
+		gbc.weighty = 0;
 		JPanel p = new JPanel();
 		p.setBackground(resources.Colors.MAIN_BG_COLOR);
 		friendListPanel.add(p, gbc);
@@ -189,7 +189,7 @@ public class FriendViewPanel extends BaseViewPanel {
 	// 내 프로필 setting
 	public void setMyProfile(String myName, ImageIcon myImg) {
 		this.userName = myName;
-		this.btnProfileImg.setIcon(profileImgResized(myImg, PROFILE_SIZE));
+		this.btnProfileImg.setIcon(imageResized(myImg, PROFILE_SIZE));
 	}
 
 	
