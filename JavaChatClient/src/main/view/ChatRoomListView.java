@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -24,10 +25,11 @@ import data.ChatRoom;
 import main.ChatClientChat;
 import main.ChatClientMain;
 import main.ChatClientMain.CheckBoxFrame;
+import main.view.item.ChatRoomItem;
 
 // Main 뷰에서 "채팅" 바텀 버튼을 누른 경우 띄워지는 view
 
-public class ChatRoomViewPanel extends BaseViewPanel{
+public class ChatRoomListView extends BaseView{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -40,7 +42,7 @@ public class ChatRoomViewPanel extends BaseViewPanel{
 	CreateRoomFrame createRoomView; // 채팅방 만들기 뷰
 	private int chatRoomListIdx = 0;
 	
-	private String[] friendNameList;
+	private String[] friendNameList = null;
 	
 	// 채팅방 추가 체크박스
 	//private int checkBoxPosY = 5;
@@ -48,7 +50,7 @@ public class ChatRoomViewPanel extends BaseViewPanel{
 	private ArrayList<ChatClientChat> chatRoomViewVec = new ArrayList<ChatClientChat>(); // 채팅방 뷰 벡터
 	private ArrayList<ChatRoom> chatRoomVec = new ArrayList<ChatRoom>(); // 각 채팅방에서의 메시지들을 보관하기 위한 벡터
 
-	public ChatRoomViewPanel(ChatClientMain parent, String name) {
+	public ChatRoomListView(ChatClientMain parent, String name) {
 		super(parent, name);
 		
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,16 +67,19 @@ public class ChatRoomViewPanel extends BaseViewPanel{
 		lblroomList.setForeground(resources.Colors.MAIN_WHITE_COLOR);
 		lblroomList.setBackground(resources.Colors.MAIN_BLUE2_COLOR);
 		lblroomList.setOpaque(true);
-		lblroomList.setBounds(10, 10, 330, 25);
+		lblroomList.setBounds(10, 10, 300, 25);
 		add(lblroomList);
 		
 		// "채팅방 추가 버튼"
-		btnMakeRoom = new JButton();
+		btnMakeRoom = new JButton("+");
 		btnMakeRoom.setBounds(310, 10, 25, 25); // 38
-		btnMakeRoom.setPreferredSize(new Dimension(25, 25));
 		btnMakeRoom.setBorder(new EmptyBorder(0,0,0,0));
+		btnMakeRoom.setPreferredSize(new Dimension(25, 25));
+		btnMakeRoom.setFont(resources.Fonts.MAIN_BOLD_24);
+		btnMakeRoom.setForeground(resources.Colors.MAIN_WHITE_COLOR);
 		btnMakeRoom.setBackground(resources.Colors.MAIN_BLUE2_COLOR);
-		btnMakeRoom.setIcon(imageResized(new ImageIcon("src/btnIcons/plus.png"), 25));
+		btnMakeRoom.setOpaque(true);
+		//btnMakeRoom.setIcon(imageResized(new ImageIcon("src/btnIcons/plus.png"), 25));
 		add(btnMakeRoom);
 
 		
@@ -90,10 +95,25 @@ public class ChatRoomViewPanel extends BaseViewPanel{
 //				checkBoxVec.removeAllElements();
 //				checkBoxPosY = 5;
 				
-				// 나의 친구 리스트 요청
-				ChatMsg fl = new ChatMsg(userName, "820", "friend list"); 
-				SendObject(fl);
 				
+				
+				// 나의 친구 리스트 요청
+				ChatMsg fl = new ChatMsg(userName, "830", "friend name list"); 
+				SendObject(fl);
+				try {
+					Thread.currentThread();
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+				if(friendNameList != null && friendNameList.length > 0) { 
+					createRoomView = new CreateRoomFrame(ChatRoomListView.this, userName, friendNameList);
+					createRoomView.setVisible(true);
+				}else {
+					System.out.println("no friend");
+				}
 			}
 		});
 
@@ -130,11 +150,29 @@ public class ChatRoomViewPanel extends BaseViewPanel{
 		chatRoomListIdx = 0;
 	}
 	
-	public void createMakeRoomView(String[] list) {
+	public void setFriendList(String[] list) { // for 채팅방 추가 화면
 		this.friendNameList = list;
+	}
+	
+	public void addRoom(ChatRoom roomData) {
+		ChatRoomItem room = new ChatRoomItem(this, roomData);
+		chatRoomListPanel.add(room);
+		chatRoomListIdx++;
 		
-		createRoomView = new CreateRoomFrame(ChatRoomViewPanel.this, userName, friendNameList);
-		createRoomView.setVisible(true);
+	}
+	
+	public void setRoomVec(Vector<ChatRoom> rooms) {
+		initChatRoomList();
+		for(ChatRoom room : rooms) {
+			addRoom(room);
+		}
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {}
+		
+		chatRoomListPanel.validate();
+		chatRoomListPanel.repaint();
+		
 	}
 	
 	@Override

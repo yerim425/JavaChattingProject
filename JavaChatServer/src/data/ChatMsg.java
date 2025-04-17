@@ -2,6 +2,8 @@
 package data;
 
 import java.io.Serializable;
+import java.util.Vector;
+
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
@@ -9,22 +11,26 @@ public class ChatMsg implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String id;
 	private String status;
-	private String code; // 
-	private String data;
-	private ImageIcon chatImg_ori;
-	private ImageIcon chatImg_resized;
+	private String code;
+	private String data;  
+	private ChatRoom roomData;
+	private Vector<ChatRoom> roomVec = new Vector<ChatRoom>();
+	
 	private ImageIcon profileImg_ori;
 	private ImageIcon profileImg_resized;
-	private int roomId = 0;
-	private String userList;
-	private JPanel roomImg;
-	private ImageIcon emoticon;
-	private String sendTime;
+	
 	
 	public ChatMsg(String id, String code, String msg) {
 		this.id = id;
 		this.code = code;
 		this.data = msg;
+	}
+	
+	public ChatMsg(String id, String code, String msg, ChatRoom cr) {
+		this.id = id;
+		this.code = code;
+		this.data = msg;
+		this.roomData = cr;
 	}
 
 
@@ -59,22 +65,6 @@ public class ChatMsg implements Serializable {
 		return data;
 	}
 	
-	public void setChatImg(ImageIcon img) {
-		this.chatImg_resized = img;
-	}
-	
-	public ImageIcon getChatImg() {
-		return chatImg_resized;
-	}
-	
-	public void setChatImg_ori(ImageIcon img) {
-		this.chatImg_ori = img;
-	}
-	
-	public ImageIcon getChatImg_ori() {
-		return chatImg_ori;
-	}
-	
 	public void setProfileImg_ori(ImageIcon img) {
 		this.profileImg_ori = img;
 	}
@@ -89,40 +79,19 @@ public class ChatMsg implements Serializable {
 	public ImageIcon getProfileImg_resized() {
 		return profileImg_resized;
 	}
-	
-	public void setRoomId(int id) {
-		this.roomId = id;
+
+
+	public ChatRoom getRoomData() {
+		return this.roomData;
+	}
+
+
+	public void addChatRoom(ChatRoom cr) {
+		this.roomVec.addElement(cr);
 	}
 	
-	public int getRoomId() {
-		return roomId;
-	}
-	
-	public void setUserList(String list) {
-		userList = list;
-	}
-	
-	public String getUserList() {
-		return userList;
-	}
-	
-	public JPanel getRoomImg() {
-		return roomImg;
-	}
-	public void setEmoticon(ImageIcon icon) {
-		this.emoticon = icon;
-	}
-	
-	public ImageIcon getEmoticon() {
-		return emoticon;
-	}
-	
-	public void setTime(String time) {
-		this.sendTime = time;
-	}
-	
-	public String getTime() {
-		return sendTime;
+	public void setRoomVec(Vector<ChatRoom> vec) {
+		this.roomVec = vec;
 	}
 
 }

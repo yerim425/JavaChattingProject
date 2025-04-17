@@ -25,7 +25,7 @@ public abstract class BaseProfileItem extends JPanel {
 	protected int PROFILE_SIZE = resources.Dimens.PROFILE_IMG_SIZE;
 	
 	protected ChatMsg user;
-	protected EmptyBorder border = new EmptyBorder(5, 5, 5, 5);
+	//protected EmptyBorder border = new EmptyBorder(5, 5, 5, 5);
 
 	// JPanel profilePanel = new JPanel();
 	private JButton btnProfileImg; // 프로필 사진
@@ -64,7 +64,7 @@ public abstract class BaseProfileItem extends JPanel {
 
 		// 유저 닉네임
 		lbluserName = new JLabel(userName);
-		lbluserName.setBorder(border);
+		lbluserName.setBorder(new EmptyBorder(5, 5, 5, 5));
 		lbluserName.setFont(resources.Fonts.MAIN_BOLD_16);
 		lbluserName.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
 		lbluserName.setPreferredSize(new Dimension(115, 30));

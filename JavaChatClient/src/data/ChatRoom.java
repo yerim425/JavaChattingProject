@@ -5,20 +5,27 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class ChatRoom {
-	public int roomId = 0;
-	public String userList;
-	public String[] userNameList;
-	public String roomName;
-	public JPanel roomImg;
-	public String lastMsg;
-	public String lastTime;
-	public Vector<ChatMsg> chatMsgs = new Vector<ChatMsg>();
 	
+	private int roomId = -1;
+	private String userList;
+	private String[] userNameList;
+	private String roomName;
+	private JPanel roomImg;
+	private String lastMsg;
+	private String lastTime;
+	private Vector<ChatMsg> chatMsgs = new Vector<ChatMsg>();
+	
+	private ImageIcon emoticon;
+	
+	
+	private ImageIcon chatImg_ori;
+	private ImageIcon chatImg_resized;
 	
 	public ChatRoom(int id, String nameList){
 		roomId = id;
 		userList = nameList;
 		userNameList = nameList.split(" ");
+		roomName = userList.replaceAll(" ", ", ");
 	}
 	
 	public int getRoomId() {
@@ -78,5 +85,38 @@ public class ChatRoom {
 	public Vector<ChatMsg> getChatMsgs(){
 		return chatMsgs;
 	}
+	
+	public void setChatImg(ImageIcon img) {
+		this.chatImg_resized = img;
+	}
+	
+	public ImageIcon getChatImg() {
+		return chatImg_resized;
+	}
+	
+	public void setChatImg_ori(ImageIcon img) {
+		this.chatImg_ori = img;
+	}
+	
+	public ImageIcon getChatImg_ori() {
+		return chatImg_ori;
+	}
+	public void setRoomId(int id) {
+		this.roomId = id;
+	}
+	
+	
+	public void setUserList(String list) {
+		userList = list;
+	}
+	
+	public void setEmoticon(ImageIcon icon) {
+		this.emoticon = icon;
+	}
+	
+	public ImageIcon getEmoticon() {
+		return emoticon;
+	}
+	
 
 }

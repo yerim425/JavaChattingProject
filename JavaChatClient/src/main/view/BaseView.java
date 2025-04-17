@@ -4,15 +4,17 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import data.ChatMsg;
 import main.ChatClientMain;
 
-public abstract class BaseViewPanel extends JPanel {
+public abstract class BaseView extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	
 	protected int PROFILE_SIZE = resources.Dimens.PROFILE_IMG_SIZE;
+	
 
 	protected ChatClientMain parent;
 	protected String userName;
@@ -21,7 +23,7 @@ public abstract class BaseViewPanel extends JPanel {
 
 	public abstract void SendObject(ChatMsg cm);
 	
-	public BaseViewPanel(ChatClientMain parent, String name) {
+	public BaseView(ChatClientMain parent, String name) {
 		this.parent = parent;
 		this.userName = name;
 		this.profileImg = new ImageIcon("src/images/profile_default.png");

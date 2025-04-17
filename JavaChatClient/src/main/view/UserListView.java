@@ -21,7 +21,7 @@ import main.ChatClientMain;
 import main.view.item.FriendProfileItem;
 import main.view.item.UserProfileItem;
 
-public class UserViewPanel extends BaseViewPanel {
+public class UserListView extends BaseView {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -40,7 +40,7 @@ public class UserViewPanel extends BaseViewPanel {
 	/**
 	 * Create the panel.
 	 */
-	public UserViewPanel(ChatClientMain parent, String name) {
+	public UserListView(ChatClientMain parent, String name) {
 		super(parent, name);
 		// this.setBackground(null);
 		

@@ -3,11 +3,11 @@ package main.view;
 import data.ChatMsg;
 import main.ChatClientMain;
 
-public class SettingViewPanel extends BaseViewPanel {
+public class SettingView extends BaseView {
 
 	private static final long serialVersionUID = 1L;
 
-	public SettingViewPanel(ChatClientMain parent, String name) {
+	public SettingView(ChatClientMain parent, String name) {
 		super(parent, name);
 		// TODO Auto-generated constructor stub
 	}

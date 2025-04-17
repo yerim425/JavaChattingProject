@@ -51,11 +51,11 @@ import javax.swing.text.AttributeSet.FontAttribute;
 
 import data.ChatMsg;
 import data.ChatRoom;
-import main.view.ChatRoomViewPanel;
-import main.view.FriendViewPanel;
+import main.view.ChatRoomListView;
+import main.view.FriendView;
 import main.view.ImgFrame;
-import main.view.SettingViewPanel;
-import main.view.UserViewPanel;
+import main.view.SettingView;
+import main.view.UserListView;
 import main.view.item.FriendProfileItem;
 
 import javax.swing.text.BadLocationException;
@@ -84,10 +84,10 @@ public class ChatClientMain extends JFrame {
 	private JPanel viewPanel; // [친구, 채팅, 접속자, 설정] 뷰 패널
 	private JPanel bottomPanel; // [친구 채팅 접속자, 설정] 바텀 버튼 패널
 
-	private FriendViewPanel friendViewPanel; // 친구 화면
-	private ChatRoomViewPanel chatViewPanel; // 채팅 화면
-	private UserViewPanel userViewPanel; // 사용자 화면
-	private SettingViewPanel settingViewPanel; // 설정 화면
+	private FriendView friendViewPanel; // 친구 화면
+	private ChatRoomListView chatRoomViewPanel; // 채팅 화면
+	private UserListView userViewPanel; // 사용자 화면
+	private SettingView settingViewPanel; // 설정 화면
 
 	private JButton friendViewBtn; // 친구 바텀 버튼
 	private JButton chatListViewBtn; // 채팅 바텀 버튼
@@ -214,10 +214,10 @@ public class ChatClientMain extends JFrame {
 		
 		//repaint();
 		
-		friendViewPanel = new FriendViewPanel(this, UserName);
-		chatViewPanel = new ChatRoomViewPanel(this, UserName);
-		userViewPanel = new UserViewPanel(this, UserName);
-		settingViewPanel = new SettingViewPanel(this, UserName);
+		friendViewPanel = new FriendView(this, UserName);
+		chatRoomViewPanel = new ChatRoomListView(this, UserName);
+		userViewPanel = new UserListView(this, UserName);
+		settingViewPanel = new SettingView(this, UserName);
 		
 		//initUserListView();
 		// initSettingView();
@@ -293,57 +293,57 @@ public class ChatClientMain extends JFrame {
 						//SendObject(new ChatMsg(UserName, "830", "room list"));//?
 						
 						break;
-					case "200": // chat message
-						check++;
-						// cm.msg를 cm.roomId의 room을 찾아 appendText
-						for (int i = 0; i < chatRoomViewVec.size(); i++) {
-							ChatClientChat cv = chatRoomViewVec.elementAt(i);
-							if (cv.RoomId == cm.getRoomId()) {
-								if (cm.getId().matches(UserName)) { // 내가 보낸 msg는 내 화면에서는 오른쪽에 출력
-									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendTextR_msg(cm.getData());
-								} else {
-									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendIcon_text(cm.getProfileImg_resized());
-									cv.AppendText_msg(cm.getData());
-								}
-
-							}
-						}
-						break;
-					case "300": // Image 첨부
-						for (int i = 0; i < chatRoomViewVec.size(); i++) {
-							ChatClientChat cv = chatRoomViewVec.elementAt(i);
-							if (cv.RoomId == cm.getRoomId()) {
-								if (cm.getId().matches(UserName)) {
-									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendImage(cm.getChatImg(), cm.getChatImg_ori());
-								} else {
-									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendIcon_img(cm.getProfileImg_resized());
-									cv.AppendImage(cm.getChatImg(), cm.getChatImg_ori());
-
-								}
-							}
-						}
-						break;
-					case "400": // Emoticon 보내기
-						for (int i = 0; i < chatRoomViewVec.size(); i++) {
-							ChatClientChat cv = chatRoomViewVec.elementAt(i);
-							if (cv.RoomId == cm.getRoomId()) {
-								if (cm.getId().matches(UserName)) {
-									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendImage(cm.getEmoticon(), cm.getEmoticon());
-								} else {
-									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
-									cv.AppendIcon_img(cm.getProfileImg_resized());
-									cv.AppendImage(cm.getEmoticon(), cm.getEmoticon());
-
-								}
-
-							}
-						}
-						break;
+//					case "200": // chat message
+//						check++;
+//						// cm.msg를 cm.roomId의 room을 찾아 appendText
+//						for (int i = 0; i < chatRoomViewVec.size(); i++) {
+//							ChatClientChat cv = chatRoomViewVec.elementAt(i);
+//							if (cv.RoomId == cm.getRoomId()) {
+//								if (cm.getId().matches(UserName)) { // 내가 보낸 msg는 내 화면에서는 오른쪽에 출력
+//									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendTextR_msg(cm.getData());
+//								} else {
+//									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendIcon_text(cm.getProfileImg_resized());
+//									cv.AppendText_msg(cm.getData());
+//								}
+//
+//							}
+//						}
+//						break;
+//					case "300": // Image 첨부
+//						for (int i = 0; i < chatRoomViewVec.size(); i++) {
+//							ChatClientChat cv = chatRoomViewVec.elementAt(i);
+//							if (cv.RoomId == cm.getRoomId()) {
+//								if (cm.getId().matches(UserName)) {
+//									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendImage(cm.getChatImg(), cm.getChatImg_ori());
+//								} else {
+//									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendIcon_img(cm.getProfileImg_resized());
+//									cv.AppendImage(cm.getChatImg(), cm.getChatImg_ori());
+//
+//								}
+//							}
+//						}
+//						break;
+//					case "400": // Emoticon 보내기
+//						for (int i = 0; i < chatRoomViewVec.size(); i++) {
+//							ChatClientChat cv = chatRoomViewVec.elementAt(i);
+//							if (cv.RoomId == cm.getRoomId()) {
+//								if (cm.getId().matches(UserName)) {
+//									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendImage(cm.getEmoticon(), cm.getEmoticon());
+//								} else {
+//									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
+//									cv.AppendIcon_img(cm.getProfileImg_resized());
+//									cv.AppendImage(cm.getEmoticon(), cm.getEmoticon());
+//
+//								}
+//
+//							}
+//						}
+//						break;
 					case "500": // 프로필 사진 변경
 						UserProfileImg_ori = cm.getProfileImg_ori();
 						UserProfileImg_resized = cm.getProfileImg_resized();
@@ -392,73 +392,73 @@ public class ChatClientMain extends JFrame {
 						SendObject(new ChatMsg(UserName, "700", "friend list"));
 						break;
 
-					case "800": // 채팅방 추가
-						// JavaObjClientChat cv = new JavaObjClientChat(myFrame, UserName,
-						// cm.getRoomId(), cm.getUserList());
-						// chatRoomViewVec.add(cv);
-						ChatRoom cr = new ChatRoom(cm.getRoomId(), cm.getUserList());
-						chatRoomVec.add(cr);
-						ChatClientChat roomView = new ChatClientChat(clientView, UserName, cm.getRoomId(),
-								cm.getUserList());
-						chatRoomViewVec.add(roomView);
+					case "800": // 채팅방 리스트 새로고침
 
-						lastTime = " ";
-						lastMsg = "/대화 없음";
-
-						ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg);
-						cm2.setRoomId(cm.getRoomId());
-						SendObject(cm2);
+//						String[] lastData = cm.getData().split("/");
+//
+//						for (int i = 0; i < chatRoomVec.size(); i++) {
+//							ChatRoom room = chatRoomVec.elementAt(i);
+//							if (room.getRoomId() == cm.getRoomId()) {
+//								room.setLastTime(lastData[0]);
+//								room.setLastMsg(lastData[1]);
+//							}
+//						}
+						chatRoomViewPanel.setRoomVec(cm.getRoomVec());
+						
 
 						break;
 
-					case "810": // 채팅방 추가 또는 미리보기/시간 변경을 위한 채팅방 리스트 새로고침
+					case "810": // 채팅방 추가 됨 -> 채팅방 아이템 만들어서 리스트에 추가
 
-						String[] lastData = cm.getData().split("/");
+						
+						//ChatRoom cr = new ChatRoom(cm.getRoomId(), cm.getUserList());
+						//chatRoomVec.add(cr);
+						//ChatClientChat roomView = new ChatClientChat(clientView, UserName, cm.getRoomId(),cm.getUserList());
+						//chatRoomViewVec.add(roomView);
 
-						for (int i = 0; i < chatRoomVec.size(); i++) {
-							ChatRoom room = chatRoomVec.elementAt(i);
-							if (room.getRoomId() == cm.getRoomId()) {
-								room.setLastTime(lastData[0]);
-								room.setLastMsg(lastData[1]);
-							}
+						//lastTime = " "; 
+						//lastMsg = "/대화 없음";
+						chatRoomViewPanel.addRoom(cm.getRoomData());
+						//ChatMsg roomMsg = new ChatMsg(UserName, "810", lastTime + lastMsg);
+						//roomMsg.setRoomId(cm.getRoomId());
+						//SendObject(roomMsg);
+						break;
+
+					case "830": // 채팅방 만들기 위한 친구 리스트
+						if (!(cm.getData().equals(""))) {
+							//String names = UserName+" "+cm.getData();
+							String[] friendList = cm.getData().split(" ");
+							chatRoomViewPanel.setFriendList(friendList);
 						}
-						printChatRoomList();
 						break;
-
-					case "820": // 채팅방 만들기 위한 친구 리스트
-						if (!(cm.getData().equals("") || cm.getData().equals(null))) {
-							String[] userList = cm.getData().split(" ");
-							chatViewPanel.createMakeRoomView(userList);
-						}
-						break;
-
-					case "830": // 채팅방 리스트 하나씩 불러오기(End : 끝 -> 채팅방 리스트 화면에 출력)
-						ChatRoom room = new ChatRoom(cm.getRoomId(), cm.getUserList());
-						String[] data = cm.getData().split("/");
-						room.setLastTime(data[0]);
-						room.setLastMsg(data[1]);
-						chatRoomVec.add(room);
-						break;
-
-					case "840": // 채팅방 채팅 내역 가져오기
-						for (int i = 0; i < chatRoomVec.size(); i++) {
-							ChatRoom r = chatRoomVec.elementAt(i);
-							ChatClientChat rv = new ChatClientChat(clientView, UserName, r.getRoomId(),
-									r.getUserList());
-							rv.setBounds(clientView.getLocation().x, clientView.getLocation().y, 350, 500);
-							rv.lastMsg = r.getLastMsg();
-							rv.lastTime = r.getLastTime();
-							chatRoomViewVec.add(rv);
-
-							ChatMsg chat = new ChatMsg(UserName, "840", "chatMsgs"); // 채팅 내역 불러오기
-							chat.setRoomId(rv.RoomId);
-							SendObject(chat);
-						}
-
-						printChatRoomList();
-						break;
+//
+//					case "830": // 채팅방 리스트 하나씩 불러오기(End : 끝 -> 채팅방 리스트 화면에 출력)
+//						ChatRoom room = new ChatRoom(cm.getRoomId(), cm.getUserList());
+//						String[] data = cm.getData().split("/");
+//						room.setLastTime(data[0]);
+//						room.setLastMsg(data[1]);
+//						chatRoomVec.add(room);
+//						break;
+//
+//					case "840": // 채팅방 채팅 내역 가져오기
+//						for (int i = 0; i < chatRoomVec.size(); i++) {
+//							ChatRoom r = chatRoomVec.elementAt(i);
+//							ChatClientChat rv = new ChatClientChat(clientView, UserName, r.getRoomId(),
+//									r.getUserList());
+//							rv.setBounds(clientView.getLocation().x, clientView.getLocation().y, 350, 500);
+//							rv.lastMsg = r.getLastMsg();
+//							rv.lastTime = r.getLastTime();
+//							chatRoomViewVec.add(rv);
+//
+//							ChatMsg chat = new ChatMsg(UserName, "840", "chatMsgs"); // 채팅 내역 불러오기
+//							chat.setRoomId(rv.RoomId);
+//							SendObject(chat);
+//						}
+//
+//						//printChatRoomList();
+//						break;
+//					}
 					}
-
 				} catch (IOException e) {
 					System.out.println("ois.readObject() error");
 					try {
@@ -709,12 +709,12 @@ public class ChatClientMain extends JFrame {
 				// 채팅 list 출력
 				//printChatRoomList();
 				
-				chatViewPanel.initChatRoomList();
+				chatRoomViewPanel.initChatRoomList();
 				
-				ChatMsg cm = new ChatMsg(UserName, "830", "chat room list");
+				ChatMsg cm = new ChatMsg(UserName, "800", "refresh");
 				SendObject(cm);
 
-				viewPanel = chatViewPanel;
+				viewPanel = chatRoomViewPanel;
 
 			} else if (b.getText().equals(resources.Strings.USER)) {
 
@@ -737,7 +737,7 @@ public class ChatClientMain extends JFrame {
 			bottomPanel.repaint();
 			
 			friendViewPanel.setVisible(false);
-			chatViewPanel.setVisible(false);
+			chatRoomViewPanel.setVisible(false);
 			userViewPanel.setVisible(false);
 			settingViewPanel.setVisible(false);
 			viewPanel.setVisible(true);

@@ -21,7 +21,7 @@ import data.ChatMsg;
 import main.ChatClientMain;
 import main.view.item.FriendProfileItem;
 
-public class FriendViewPanel extends BaseViewPanel {
+public class FriendView extends BaseView {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -41,7 +41,7 @@ public class FriendViewPanel extends BaseViewPanel {
 	/**
 	 * Create the panel.
 	 */
-	public FriendViewPanel(ChatClientMain parent, String name) {
+	public FriendView(ChatClientMain parent, String name) {
 		super(parent, name);
 		// this.setBackground(null);
 		setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -74,15 +74,15 @@ public class FriendViewPanel extends BaseViewPanel {
 				fd.setVisible(true);
 
 				ImageIcon selectImg = new ImageIcon(fd.getDirectory() + fd.getFile());
-				FriendViewPanel.this.profileImg = selectImg;
+				FriendView.this.profileImg = selectImg;
 				// UserProfileImg_resized = profileImgResize(UserProfileImg_ori, 50);
-				FriendViewPanel.this.profileImg_resized = imageResized(selectImg, resources.Dimens.PROFILE_IMG_SIZE);
-				btnProfileImg.setIcon(FriendViewPanel.this.profileImg_resized);
+				FriendView.this.profileImg_resized = imageResized(selectImg, resources.Dimens.PROFILE_IMG_SIZE);
+				btnProfileImg.setIcon(FriendView.this.profileImg_resized);
 
-				ChatMsg obcm = new ChatMsg(FriendViewPanel.this.userName, "500", "change profile img"); // 프로필 사진 변경
-				obcm.setProfileImg_ori(FriendViewPanel.this.profileImg);
-				obcm.setProfileImg_resized(FriendViewPanel.this.profileImg_resized);
-				FriendViewPanel.this.parent.SendObject(obcm);
+				ChatMsg obcm = new ChatMsg(FriendView.this.userName, "500", "change profile img"); // 프로필 사진 변경
+				obcm.setProfileImg_ori(FriendView.this.profileImg);
+				obcm.setProfileImg_resized(FriendView.this.profileImg_resized);
+				FriendView.this.parent.SendObject(obcm);
 			}
 		});
 		

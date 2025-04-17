@@ -447,96 +447,98 @@ public class ChatServer extends JFrame {
 						WriteOneObject(cm2);
 						Login();
 
-					} else if (cm.getCode().equals("200")) { // message
-						msg = String.format("[%s] %s", cm.getId(), cm.getData());
-						AppendText(msg); // server 화면에 출력
-						String[] args = msg.split(" "); // 단어들을 분리한다.
-
-						if (args.length == 1) { // Enter key 만 들어온 경우 Wake up 처리만 한다.
-							UserStatus = "O";
-
-						} else { // 일반 채팅 메시지
-							UserStatus = "O";
-
-							for (int i = 0; i < ChatRoomVec.size(); i++) {
-								ChatRoom r = ChatRoomVec.elementAt(i);
-								if (r.getRoomId() == cm.getRoomId()) {
-
-									String lastTime = calcTime();
-									String lastMsg = "/" + cm.getData();
-									for (int j = 0; j < user_vc.size(); j++) {
-										UserService user = user_vc.elementAt(j);
-										if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
-											cm.setProfileImg_resized(UserProfileImg_resized);
-											cm.setProfileImg_ori(UserProfileImg);
-											user.WriteOneObject(cm);
-
-											ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
-																											// lastTime/lastMsg
-											cm2.setRoomId(cm.getRoomId());
-											user.WriteOneObject(cm2);
-										}
-									}
-
-									r.addChatMsg(cm);
-									r.setLastTime(lastTime);
-									r.setLastMsg(cm.getData());
-								}
-							}
-						}
-					} else if (cm.getCode().equals("300")) { // image 보내기
-						for (int i = 0; i < ChatRoomVec.size(); i++) {
-							ChatRoom r = ChatRoomVec.elementAt(i);
-							if (r.getRoomId() == cm.getRoomId()) {
-
-								String lastTime = calcTime();
-								String lastMsg = "/(사진)";
-								for (int j = 0; j < user_vc.size(); j++) {
-									UserService user = user_vc.elementAt(j);
-
-									if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
-										cm.setProfileImg_resized(UserProfileImg_resized);
-										cm.setProfileImg_ori(UserProfileImg);
-										user.WriteOneObject(cm);
-
-										ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
-																										// lastTime/lastMsg
-										cm2.setRoomId(cm.getRoomId());
-										user.WriteOneObject(cm2);
-									}
-								}
-								r.addChatMsg(cm);
-								r.setLastTime(lastTime);
-								r.setLastMsg("(사진)");
-							}
-						}
-
-					} else if (cm.getCode().equals("400")) { // 이모티콘 보내기
-						for (int i = 0; i < ChatRoomVec.size(); i++) {
-							ChatRoom r = ChatRoomVec.elementAt(i);
-							if (r.getRoomId() == cm.getRoomId()) {
-
-								String lastTime = calcTime();
-								String lastMsg = "/" + cm.getData();
-								for (int j = 0; j < user_vc.size(); j++) {
-									UserService user = user_vc.elementAt(j);
-									if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
-										cm.setProfileImg_resized(UserProfileImg_resized);
-										cm.setProfileImg_ori(UserProfileImg);
-										user.WriteOneObject(cm);
-
-										ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
-																										// lastTime/lastMsg
-										cm2.setRoomId(cm.getRoomId());
-										user.WriteOneObject(cm2);
-									}
-								}
-								r.addChatMsg(cm);
-								r.setLastTime(lastTime);
-								r.setLastMsg(cm.getData());
-							}
-						}
-					} else if (cm.getCode().equals("500")) { // user profile image set
+					} 
+//					else if (cm.getCode().equals("200")) { // message
+//						msg = String.format("[%s] %s", cm.getId(), cm.getData());
+//						AppendText(msg); // server 화면에 출력
+//						String[] args = msg.split(" "); // 단어들을 분리한다.
+//
+//						if (args.length == 1) { // Enter key 만 들어온 경우 Wake up 처리만 한다.
+//							UserStatus = "O";
+//
+//						} else { // 일반 채팅 메시지
+//							UserStatus = "O";
+//
+//							for (int i = 0; i < ChatRoomVec.size(); i++) {
+//								ChatRoom r = ChatRoomVec.elementAt(i);
+//								if (r.getRoomId() == cm.getRoomId()) {
+//
+//									String lastTime = calcTime();
+//									String lastMsg = "/" + cm.getData();
+//									for (int j = 0; j < user_vc.size(); j++) {
+//										UserService user = user_vc.elementAt(j);
+//										if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
+//											cm.setProfileImg_resized(UserProfileImg_resized);
+//											cm.setProfileImg_ori(UserProfileImg);
+//											user.WriteOneObject(cm);
+//
+//											ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
+//																											// lastTime/lastMsg
+//											cm2.setRoomId(cm.getRoomId());
+//											user.WriteOneObject(cm2);
+//										}
+//									}
+//
+//									r.addChatMsg(cm);
+//									r.setLastTime(lastTime);
+//									r.setLastMsg(cm.getData());
+//								}
+//							}
+//						}
+//					} else if (cm.getCode().equals("300")) { // image 보내기
+//						for (int i = 0; i < ChatRoomVec.size(); i++) {
+//							ChatRoom r = ChatRoomVec.elementAt(i);
+//							if (r.getRoomId() == cm.getRoomId()) {
+//
+//								String lastTime = calcTime();
+//								String lastMsg = "/(사진)";
+//								for (int j = 0; j < user_vc.size(); j++) {
+//									UserService user = user_vc.elementAt(j);
+//
+//									if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
+//										cm.setProfileImg_resized(UserProfileImg_resized);
+//										cm.setProfileImg_ori(UserProfileImg);
+//										user.WriteOneObject(cm);
+//
+//										ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
+//																										// lastTime/lastMsg
+//										cm2.setRoomId(cm.getRoomId());
+//										user.WriteOneObject(cm2);
+//									}
+//								}
+//								r.addChatMsg(cm);
+//								r.setLastTime(lastTime);
+//								r.setLastMsg("(사진)");
+//							}
+//						}
+//
+//					} else if (cm.getCode().equals("400")) { // 이모티콘 보내기
+//						for (int i = 0; i < ChatRoomVec.size(); i++) {
+//							ChatRoom r = ChatRoomVec.elementAt(i);
+//							if (r.getRoomId() == cm.getRoomId()) {
+//
+//								String lastTime = calcTime();
+//								String lastMsg = "/" + cm.getData();
+//								for (int j = 0; j < user_vc.size(); j++) {
+//									UserService user = user_vc.elementAt(j);
+//									if (r.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) {
+//										cm.setProfileImg_resized(UserProfileImg_resized);
+//										cm.setProfileImg_ori(UserProfileImg);
+//										user.WriteOneObject(cm);
+//
+//										ChatMsg cm2 = new ChatMsg(UserName, "810", lastTime + lastMsg); // data :
+//																										// lastTime/lastMsg
+//										cm2.setRoomId(cm.getRoomId());
+//										user.WriteOneObject(cm2);
+//									}
+//								}
+//								r.addChatMsg(cm);
+//								r.setLastTime(lastTime);
+//								r.setLastMsg(cm.getData());
+//							}
+//						}
+//					} 
+					else if (cm.getCode().equals("500")) { // user profile image set
 						this.UserProfileImg = cm.getProfileImg_ori();
 						this.UserProfileImg_resized = cm.getProfileImg_resized();
 
@@ -548,18 +550,19 @@ public class ChatServer extends JFrame {
 							}
 
 						}
-
-						for (int j = 0; j < ChatRoomVec.size(); j++) {
-							ChatRoom cr = ChatRoomVec.elementAt(j);
-							if (cr.getUserList().contains(UserName)) {
-								for (int k = 0; k < cr.chatMsgs.size(); k++) {
-									ChatMsg c = cr.chatMsgs.elementAt(k);
-									if (c.getId().equals(UserName)) {
-										c.setProfileImg_resized(UserProfileImg_resized);
-									}
-								}
-							}
-						}
+						
+						// 채팅쪽 완성하면 주석 제거하기
+//						for (int j = 0; j < ChatRoomVec.size(); j++) {
+//							ChatRoom cr = ChatRoomVec.elementAt(j);
+//							if (cr.getUserList().contains(UserName)) {
+//								for (int k = 0; k < cr.chatMsgs.size(); k++) {
+//									ChatMsg c = cr.chatMsgs.elementAt(k);
+//									if (c.getId().equals(UserName)) {
+//										c.setProfileImg_resized(UserProfileImg_resized);
+//									}
+//								}
+//							}
+//						}
 					} else if (cm.getCode().equals("510")) { // original profile image
 						String[] data = cm.getId().split("\\["); // "", "user1]"
 						data = data[1].split("\\]"); // "user1"
@@ -693,91 +696,104 @@ public class ChatServer extends JFrame {
 							}
 						}
 
-					} else if (cm.getCode().equals("800")) { // 채팅방 만들기
+					} else if (cm.getCode().equals("800")) { // 채팅방 새로고침(전체)
+						
+						
+						Vector<ChatRoom> vec = new Vector<ChatRoom>();
+						for(ChatRoom room : ChatRoomVec) {
+							if(room.getUserList().contains(UserName)) {
+								vec.addElement(room);
+							}
+						}
+						
+						ChatMsg cm2 = new ChatMsg(UserName, "800", cm.getData()); // "refresh, all"
+						cm2.setRoomVec(vec);
+						WriteOneObject(cm2);
+						
+					}
+
+					else if (cm.getCode().equals("810")) { // 채팅방 만들기
+						
+						// 여기서 output 할때가 문제...
+						// ChatMsg, ChatRoom 각 클래스가 내용 같은지 확인!!
 						ChatRoom cr = new ChatRoom(roomId++, cm.getData()); // Data : user list
 						ChatRoomVec.add(cr);
 
 						for (int i = 0; i < user_vc.size(); i++) { // 모든 유저들에 대해서
 							UserService user = (UserService) user_vc.elementAt(i);
 							if (cm.getData().contains(user.UserName)) { // 초대한 유저와 초대된 유저들만
-								ChatMsg mr = new ChatMsg(user.UserName, "800", "create room");
-								mr.setRoomId(cr.getRoomId());
-								mr.setUserList(cr.getUserList());
-								if (user.UserStatus.matches("O"))
+								
+								// 채팅방 리스트에 새로 추가한 채팅방 아이템 추가
+								ChatMsg mr = new ChatMsg(user.UserName, "810", "add room", cr);
+								if (user.UserStatus.matches("O")) // 친구는 온라인 상태라면 채팅방 정보 넘김
 									user.WriteOneObject(mr);
-								// user.userRoomVec.add(cr);
 							}
 						}
-
 					}
-
-					else if (cm.getCode().equals("810")) { // 채팅방 추가 후 채팅방 리스트 새로고침
-						ChatMsg cm2 = new ChatMsg(UserName, "810", cm.getData()); // data : lastTime, lastMsg("대화 없음")
-						cm2.setRoomId(cm.getRoomId());
-						WriteOneObject(cm2);
-
-					} else if (cm.getCode().matches("811")) { // 변경된 lastTime, lastMsg를 다른 유저의 리스트에도 출력하기 위한 채팅방 리스트
-																// 새로고침
-
-						for (int i = 0; i < ChatRoomVec.size(); i++) {
-							ChatRoom cr = ChatRoomVec.elementAt(i);
-							if (cr.getRoomId() == cm.getRoomId()) {
-								String[] data = new String[2];
-								data = cm.getData().split("/");
-								cr.setLastTime(data[0]);
-								cr.setLastMsg(data[1]);
-								System.out.println("RoomId:" + cr.getRoomId() + " " + data[0] + " " + data[1]);
-							}
-						}
-
-						for (int j = 0; j < user_vc.size(); j++) { // 모든 유저들에 대해서
-							UserService user = (UserService) user_vc.elementAt(j);
-							if (cm.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) { // 초대한 유저와
-																											// 초대된 유저들만
-								ChatMsg cm2 = new ChatMsg(UserName, "810", cm.getData()); // data : lastTime/lastMsg
-								cm2.setRoomId(cm.getRoomId());
-								user.WriteOneObject(cm2);
-							}
-						}
-
-					} else if (cm.getCode().equals("820")) { // 체크 박스를 위한 나의 친구 리스트 보내기
+//					else if (cm.getCode().matches("811")) { // 변경된 lastTime, lastMsg를 다른 유저의 리스트에도 출력하기 위한 채팅방 리스트
+//																// 새로고침
+//
+//						for (int i = 0; i < ChatRoomVec.size(); i++) {
+//							ChatRoom cr = ChatRoomVec.elementAt(i);
+//							if (cr.getRoomId() == cm.getRoomId()) {
+//								String[] data = new String[2];
+//								data = cm.getData().split("/");
+//								cr.setLastTime(data[0]);
+//								cr.setLastMsg(data[1]);
+//								System.out.println("RoomId:" + cr.getRoomId() + " " + data[0] + " " + data[1]);
+//							}
+//						}
+//
+//						for (int j = 0; j < user_vc.size(); j++) { // 모든 유저들에 대해서
+//							UserService user = (UserService) user_vc.elementAt(j);
+//							if (cm.getUserList().contains(user.UserName) && user.UserStatus.matches("O")) { // 초대한 유저와
+//																											// 초대된 유저들만
+//								ChatMsg cm2 = new ChatMsg(UserName, "810", cm.getData()); // data : lastTime/lastMsg
+//								cm2.setRoomId(cm.getRoomId());
+//								user.WriteOneObject(cm2);
+//							}
+//						}
+//
+//					} 
+				else if (cm.getCode().equals("830")) { // 체크 박스를 위한 나의 친구 리스트 보내기
 						String friendList = "";
 						for (int i = 0; i < friendNameVec.size(); i++) {
 							friendList = friendList + friendNameVec.elementAt(i) + " ";
 						}
-						ChatMsg fl = new ChatMsg(UserName, "820", friendList);
+						ChatMsg fl = new ChatMsg(UserName, "830", friendList);
 						WriteOneObject(fl);
-					} else if (cm.getCode().equals("830")) {
-						// 채팅방 리스트 보내기
-						if (ChatRoomVec.size() != 0) {
-							for (int i = 0; i < ChatRoomVec.size(); i++) {
-								ChatRoom cr = ChatRoomVec.elementAt(i);
-								if (cr.getUserList().contains(UserName)) {
-									ChatMsg roomData = new ChatMsg(UserName, "830",
-											cr.getLastTime() + "/" + cr.getLastMsg());
-									roomData.setRoomId(cr.getRoomId());
-									roomData.setUserList(cr.getUserList());
-									WriteOneObject(roomData);
-								}
-							}
-							WriteOneObject(new ChatMsg(UserName, "840", "printChatList"));
-						}
-					} else if (cm.getCode().equals("840")) {
-						// 채팅방 내역 보내기
-						for (int i = 0; i < ChatRoomVec.size(); i++) {
-							ChatRoom cr = ChatRoomVec.elementAt(i);
-							if (cr.getRoomId() == cm.getRoomId()) {
-								if (cr.chatMsgs.size() != 0) {
-									for (int j = 0; j < cr.getChatMsgs().size(); j++) {
-										ChatMsg c = cr.getChatMsgs().elementAt(j);
-
-										WriteOneObject(c);
-									}
-								}
-
-							}
-						}
-					} else if (cm.getCode().equals("900")) { // 종료
+//					} else if (cm.getCode().equals("830")) {
+//						// 채팅방 리스트 보내기
+//						if (ChatRoomVec.size() != 0) {
+//							for (int i = 0; i < ChatRoomVec.size(); i++) {
+//								ChatRoom cr = ChatRoomVec.elementAt(i);
+//								if (cr.getUserList().contains(UserName)) {
+//									ChatMsg roomData = new ChatMsg(UserName, "830",
+//											cr.getLastTime() + "/" + cr.getLastMsg());
+//									roomData.setRoomId(cr.getRoomId());
+//									roomData.setUserList(cr.getUserList());
+//									WriteOneObject(roomData);
+//								}
+//							}
+//							WriteOneObject(new ChatMsg(UserName, "840", "printChatList"));
+//						}
+//					} else if (cm.getCode().equals("840")) {
+//						// 채팅방 내역 보내기
+//						for (int i = 0; i < ChatRoomVec.size(); i++) {
+//							ChatRoom cr = ChatRoomVec.elementAt(i);
+//							if (cr.getRoomId() == cm.getRoomId()) {
+//								if (cr.chatMsgs.size() != 0) {
+//									for (int j = 0; j < cr.getChatMsgs().size(); j++) {
+//										ChatMsg c = cr.getChatMsgs().elementAt(j);
+//
+//										WriteOneObject(c);
+//									}
+//								}
+//
+//							}
+//						}
+//					}
+				}else if (cm.getCode().equals("900")) { // 종료
 						Logout();
 					}
 

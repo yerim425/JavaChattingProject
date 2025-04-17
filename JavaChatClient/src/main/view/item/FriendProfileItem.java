@@ -19,15 +19,15 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import data.ChatMsg;
-import main.view.FriendViewPanel;
+import main.view.FriendView;
 
 public class FriendProfileItem extends BaseProfileItem {
 
 	private static final long serialVersionUID = 1L;
 	private JButton btnFriend;  // 친구 버튼
-	private FriendViewPanel parent;
+	private FriendView parent;
 	
-	public FriendProfileItem(FriendViewPanel parent, ChatMsg user) {
+	public FriendProfileItem(FriendView parent, ChatMsg user) {
 		//super(parent, user);
 		super(user);
 		this.parent = parent;

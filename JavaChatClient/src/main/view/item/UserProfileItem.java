@@ -20,20 +20,20 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 import data.ChatMsg;
-import main.view.UserViewPanel;
+import main.view.UserListView;
 
 public class UserProfileItem extends BaseProfileItem {
 
 	private static final long serialVersionUID = 1L;
 	private JButton btnUser;  // 친구 버튼
-	private UserViewPanel parent;
+	private UserListView parent;
 	
 	
-	public UserProfileItem(UserViewPanel parent, ChatMsg user) {
+	public UserProfileItem(UserListView parent, ChatMsg user) {
 		//super(parent, user);
 		super(user);
 		this.parent = parent;
-		setBorder(border);
+		setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		
 		
@@ -99,7 +99,7 @@ public class UserProfileItem extends BaseProfileItem {
 				btnUser.setEnabled(true);
 				btnUser.setBackground(resources.Colors.MAIN_BLUE2_COLOR);
 				btnUser.setForeground(resources.Colors.MAIN_WHITE_COLOR);
-				btnUser.setBorder(border);
+				btnUser.setBorder(new EmptyBorder(5, 5, 5, 5));
 				
 				btnUser.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
