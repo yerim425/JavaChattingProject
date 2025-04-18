@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -18,6 +20,7 @@ import javax.swing.border.EmptyBorder;
 
 import data.ChatMsg;
 import main.ChatClientMain;
+import main.view.item.ChatRoomItem;
 import main.view.item.FriendProfileItem;
 import main.view.item.UserProfileItem;
 
@@ -43,13 +46,11 @@ public class UserListView extends BaseView {
 	public UserListView(ChatClientMain parent, String name) {
 		super(parent, name);
 		// this.setBackground(null);
-		
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setBounds(0, 0, 335, 510);
 		setLayout(null);
 		setVisible(false);
 		setBackground(resources.Colors.MAIN_BG_COLOR);
-		
 
 		// "사용자 목록"
 		lblUserList = new JLabel(resources.Strings.USER_LIST);
@@ -65,19 +66,21 @@ public class UserListView extends BaseView {
 		// 스크롤 화면 설정
 		userListPanel = new JPanel(new GridBagLayout());
 		userListPanel.setBackground(resources.Colors.MAIN_BG_COLOR);
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.weighty = 0; // 1
-		JPanel p = new JPanel();
-		p.setBackground(resources.Colors.MAIN_BG_COLOR);
-		userListPanel.add(p, gbc);
+		userListPanel.setLayout(new BoxLayout(userListPanel, BoxLayout.Y_AXIS));
+		userListPanel.setAlignmentY(TOP_ALIGNMENT);
+		userListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
+		userListPanel.setOpaque(true);
 		
 	
 		userListScrollPane = new JScrollPane(userListPanel);
+		userListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		userListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		userListScrollPane.setBounds(10, 50, 325, 460);
 		userListScrollPane.setBackground(resources.Colors.MAIN_BG_COLOR);
 		// userListScrollPane.setPreferredSize(new Dimension(300, 330));
+		userListScrollPane.getViewport().setOpaque(false);
+		userListScrollPane.setOpaque(false);
+		userListScrollPane.setBorder(null);
 		add(userListScrollPane);
 
 		//UserViewPanel.this.parent.SendObject(new ChatMsg(userName, "600", "all"));
@@ -88,22 +91,13 @@ public class UserListView extends BaseView {
 public void addUser(ChatMsg cm) {
 		
 		UserProfileItem user = new UserProfileItem(this, cm);
-		//UserVec.add(user);
+		userListPanel.add(user);
+		userListPanel.add(Box.createVerticalStrut(10));
 		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		//gbc.weightx = 0;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
+		userListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
 		
-		//friendListPanel.add(((JPanel)friend), gbc, friendListIdx);
-		
-		
-		userListPanel.add(((JPanel)user), gbc, userListIdx);
-		userListIdx++;
-		
-		userListPanel.revalidate();
-		userListPanel.repaint();
+		userListScrollPane.revalidate();
+		userListScrollPane.repaint();
 	}
 	
 	public void removeUser(UserProfileItem user) {
@@ -132,11 +126,9 @@ public void addUser(ChatMsg cm) {
 
 		userListPanel.removeAll();
 		
-		// 이거 두 개 필요한가?
 		userListPanel.revalidate();
 		userListPanel.repaint();
 		
-		userListIdx = 0;
 	}
 	
 	public String getUserName() {
@@ -152,6 +144,19 @@ public void addUser(ChatMsg cm) {
 		// TODO Auto-generated method stub
 		parent.SendObject(cm);
 		
+	}
+	
+	public int calculatePanelHeight() {
+		int itemCount = 0;
+		
+	    for (int i = 0; i < userListPanel.getComponentCount(); i++) {
+	        if (userListPanel.getComponent(i) instanceof UserProfileItem) {
+	            itemCount++;
+	        }
+	    }
+	    int itemHeight = 60; 
+	    int spacing = 10;
+	    return itemCount * (itemHeight + spacing);
 	}
 
 }

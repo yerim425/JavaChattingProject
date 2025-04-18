@@ -1,11 +1,6 @@
 package main.view.item;
 
 import java.awt.*;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -32,8 +27,8 @@ public class FriendProfileItem extends BaseProfileItem {
 		super(user);
 		this.parent = parent;
 		
-		
-		// 친구 버튼 추가
+	    
+	    // 친구 버튼 추가
 		btnFriend  = new JButton(); 
 		btnFriend.setPreferredSize(new Dimension(125, 30));
 		btnFriend.setFont(resources.Fonts.MAIN_BOLD_12);
@@ -49,7 +44,7 @@ public class FriendProfileItem extends BaseProfileItem {
 			} else if (user.getStatus().equals("S")) {
 				btnFriend.setText("미접속중");
 			}
-			add(btnFriend);
+			contentPane.add(btnFriend);
 		} else if (dataMsg.equals("recv")) { // 2) 친구는 아니지만, 친구 요청 받음
 			btnFriend.setText("친구 요청 수락");
 			btnFriend.setForeground(resources.Colors.MAIN_WHITE_COLOR);
@@ -80,10 +75,10 @@ public class FriendProfileItem extends BaseProfileItem {
 					FriendProfileItem.this.repaint();
 				}
 			});
-			add(btnFriend);
+			contentPane.add(btnFriend);
 		}
 
-		
+		this.setVisible(true);
 
 	}
 

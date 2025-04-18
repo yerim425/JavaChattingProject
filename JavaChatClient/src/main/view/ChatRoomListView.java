@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -47,8 +49,8 @@ public class ChatRoomListView extends BaseView{
 	// 채팅방 추가 체크박스
 	//private int checkBoxPosY = 5;
 	//private Vector<JCheckBox> checkBoxVec = new Vector<JCheckBox>();
-	private ArrayList<ChatClientChat> chatRoomViewVec = new ArrayList<ChatClientChat>(); // 채팅방 뷰 벡터
-	private ArrayList<ChatRoom> chatRoomVec = new ArrayList<ChatRoom>(); // 각 채팅방에서의 메시지들을 보관하기 위한 벡터
+	//private ArrayList<ChatClientChat> chatRoomViewVec = new ArrayList<ChatClientChat>(); // 채팅방 뷰 벡터
+	//private ArrayList<ChatRoom> chatRoomVec = new ArrayList<ChatRoom>(); // 각 채팅방에서의 메시지들을 보관하기 위한 벡터
 
 	public ChatRoomListView(ChatClientMain parent, String name) {
 		super(parent, name);
@@ -79,23 +81,12 @@ public class ChatRoomListView extends BaseView{
 		btnMakeRoom.setForeground(resources.Colors.MAIN_WHITE_COLOR);
 		btnMakeRoom.setBackground(resources.Colors.MAIN_BLUE2_COLOR);
 		btnMakeRoom.setOpaque(true);
-		//btnMakeRoom.setIcon(imageResized(new ImageIcon("src/btnIcons/plus.png"), 25));
 		add(btnMakeRoom);
 
 		
 		
 		btnMakeRoom.addActionListener(new ActionListener() { // 버튼 리스너
 			public void actionPerformed(ActionEvent e) {
-//				if(friendNameList.size() > 0) { // 리스트를 서버로부터 받아왔다면 버튼 클릭 시 생성됨
-//					
-//				}
-//				makeRoomView = new MakeChatRoomFrame(ChatViewPanel.this, userName, friendNameList);
-//				makeRoomView.setVisible(false);
-//
-//				checkBoxVec.removeAllElements();
-//				checkBoxPosY = 5;
-				
-				
 				
 				// 나의 친구 리스트 요청
 				ChatMsg fl = new ChatMsg(userName, "830", "friend name list"); 
@@ -119,18 +110,19 @@ public class ChatRoomListView extends BaseView{
 
 
 		// 스크롤 화면 설정
-		chatRoomListPanel = new JPanel(new GridBagLayout());
+		chatRoomListPanel = new JPanel();
+		chatRoomListPanel.setLayout(new BoxLayout(chatRoomListPanel, BoxLayout.Y_AXIS));
+		chatRoomListPanel.setAlignmentY(TOP_ALIGNMENT);
+		chatRoomListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
 		chatRoomListPanel.setBackground(resources.Colors.MAIN_BG_COLOR);
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		JPanel p = new JPanel();
-		p.setBackground(resources.Colors.MAIN_BG_COLOR);
-		chatRoomListPanel.add(p, gbc);
-		
+		chatRoomListPanel.setOpaque(true);
 	
 		chatRoomListScrollPane = new JScrollPane(chatRoomListPanel);
+		chatRoomListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		chatRoomListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		chatRoomListScrollPane.getViewport().setOpaque(false);
+		chatRoomListScrollPane.setOpaque(false);
+		chatRoomListScrollPane.setBorder(null);
 		chatRoomListScrollPane.setBounds(10, 50, 325, 460);
 		chatRoomListScrollPane.setBackground(resources.Colors.MAIN_BG_COLOR);
 		add(chatRoomListScrollPane);
@@ -143,11 +135,10 @@ public class ChatRoomListView extends BaseView{
 
 		chatRoomListPanel.removeAll();
 		
-		// 이거 두개 필요한가?
 		chatRoomListPanel.revalidate();
 		chatRoomListPanel.repaint();
 		
-		chatRoomListIdx = 0;
+		//chatRoomListIdx = 0;
 	}
 	
 	public void setFriendList(String[] list) { // for 채팅방 추가 화면
@@ -157,7 +148,12 @@ public class ChatRoomListView extends BaseView{
 	public void addRoom(ChatRoom roomData) {
 		ChatRoomItem room = new ChatRoomItem(this, roomData);
 		chatRoomListPanel.add(room);
-		chatRoomListIdx++;
+		chatRoomListPanel.add(Box.createVerticalStrut(10));
+		
+		chatRoomListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
+		
+		chatRoomListPanel.revalidate();
+		chatRoomListPanel.repaint();
 		
 	}
 	
@@ -173,12 +169,26 @@ public class ChatRoomListView extends BaseView{
 		chatRoomListPanel.validate();
 		chatRoomListPanel.repaint();
 		
+		
 	}
 	
 	@Override
 	public void SendObject(ChatMsg cm) {
 		parent.SendObject(cm);
 		
+	}
+	
+	public int calculatePanelHeight() {
+		int itemCount = 0;
+		
+	    for (int i = 0; i < chatRoomListPanel.getComponentCount(); i++) {
+	        if (chatRoomListPanel.getComponent(i) instanceof ChatRoomItem) {
+	            itemCount++;
+	        }
+	    }
+	    int itemHeight = 60; 
+	    int spacing = 10;
+	    return itemCount * (itemHeight + spacing);
 	}
 	
 

@@ -85,7 +85,7 @@ public class ChatClientMain extends JFrame {
 	private JPanel bottomPanel; // [친구 채팅 접속자, 설정] 바텀 버튼 패널
 
 	private FriendView friendViewPanel; // 친구 화면
-	private ChatRoomListView chatRoomViewPanel; // 채팅 화면
+	private ChatRoomListView chatRoomListViewPanel; // 채팅 화면
 	private UserListView userViewPanel; // 사용자 화면
 	private SettingView settingViewPanel; // 설정 화면
 
@@ -215,7 +215,7 @@ public class ChatClientMain extends JFrame {
 		//repaint();
 		
 		friendViewPanel = new FriendView(this, UserName);
-		chatRoomViewPanel = new ChatRoomListView(this, UserName);
+		chatRoomListViewPanel = new ChatRoomListView(this, UserName);
 		userViewPanel = new UserListView(this, UserName);
 		settingViewPanel = new SettingView(this, UserName);
 		
@@ -403,7 +403,7 @@ public class ChatClientMain extends JFrame {
 //								room.setLastMsg(lastData[1]);
 //							}
 //						}
-						chatRoomViewPanel.setRoomVec(cm.getRoomVec());
+						chatRoomListViewPanel.setRoomVec(cm.getRoomVec());
 						
 
 						break;
@@ -418,7 +418,10 @@ public class ChatClientMain extends JFrame {
 
 						//lastTime = " "; 
 						//lastMsg = "/대화 없음";
-						chatRoomViewPanel.addRoom(cm.getRoomData());
+						
+						chatRoomListViewPanel.addRoom(cm.getRoomData());
+						//System.out.println("cliend recv 810");
+						
 						//ChatMsg roomMsg = new ChatMsg(UserName, "810", lastTime + lastMsg);
 						//roomMsg.setRoomId(cm.getRoomId());
 						//SendObject(roomMsg);
@@ -428,7 +431,7 @@ public class ChatClientMain extends JFrame {
 						if (!(cm.getData().equals(""))) {
 							//String names = UserName+" "+cm.getData();
 							String[] friendList = cm.getData().split(" ");
-							chatRoomViewPanel.setFriendList(friendList);
+							chatRoomListViewPanel.setFriendList(friendList);
 						}
 						break;
 //
@@ -709,12 +712,12 @@ public class ChatClientMain extends JFrame {
 				// 채팅 list 출력
 				//printChatRoomList();
 				
-				chatRoomViewPanel.initChatRoomList();
+				chatRoomListViewPanel.initChatRoomList();
 				
 				ChatMsg cm = new ChatMsg(UserName, "800", "refresh");
 				SendObject(cm);
 
-				viewPanel = chatRoomViewPanel;
+				viewPanel = chatRoomListViewPanel;
 
 			} else if (b.getText().equals(resources.Strings.USER)) {
 
@@ -737,7 +740,7 @@ public class ChatClientMain extends JFrame {
 			bottomPanel.repaint();
 			
 			friendViewPanel.setVisible(false);
-			chatRoomViewPanel.setVisible(false);
+			chatRoomListViewPanel.setVisible(false);
 			userViewPanel.setVisible(false);
 			settingViewPanel.setVisible(false);
 			viewPanel.setVisible(true);
@@ -890,119 +893,119 @@ public class ChatClientMain extends JFrame {
 //
 //	}
 
-	public void printChatRoomList() { // 채팅방 리스트 출력
-
-		chatListIdx = 0;
-		chatListScrollPanel = new JPanel(new GridBagLayout());
-		chatListScrollPanel.setBackground(backColor);
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.weighty = 1;
-		JPanel p = new JPanel();
-		p.setBackground(backColor);
-		chatListScrollPanel.add(p, gbc);
-		chatListScrollPane.setViewportView(chatListScrollPanel);
-
-		for (int i = 0; i < chatRoomVec.size(); i++) {
-			ChatRoom room = chatRoomVec.elementAt(i);
-			for (int j = 0; j < chatRoomViewVec.size(); j++) {
-				ChatClientChat roomView = chatRoomViewVec.elementAt(j);
-				if (room.getRoomId() == roomView.RoomId) {
-					if (room.getLastMsg().equals("null") || room.getLastMsg() == null) {
-						roomView.lastMsg = "대화 없음";
-					} else {
-						roomView.lastMsg = room.getLastMsg();
-						roomView.lastTime = room.getLastTime();
-					}
-
-					JPanel roomPanel = new JPanel(new GridBagLayout());
-					roomPanel.setBorder(new LineBorder(backColor, 3));
-					GridBagConstraints gbc1 = new GridBagConstraints();
-
-					roomPanel.setPreferredSize(new Dimension(298, 60));
-					roomPanel.setBackground(Color.white);
-					roomPanel.addMouseListener(new MouseListener() {
-
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							// TODO Auto-generated method stub
-							roomView.setBounds(clientView.getLocation().x, clientView.getLocation().y, 350, 500);
-							roomView.setVisible(true);
-						}
-
-						@Override
-						public void mousePressed(MouseEvent e) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void mouseReleased(MouseEvent e) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void mouseEntered(MouseEvent e) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void mouseExited(MouseEvent e) {
-							// TODO Auto-generated method stub
-
-						}
-
-					});
-
-					JLabel lblRoomName = new JLabel(roomView.RoomName, SwingConstants.LEFT);
-					lblRoomName.setBackground(backColor);
-					lblRoomName.setPreferredSize(new Dimension(200, 20));
-					lblRoomName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-					gbc1.gridx = 0;
-					gbc1.gridy = 0;
-					gbc1.gridwidth = 5;
-					gbc1.gridheight = 1;
-					roomPanel.add(lblRoomName, gbc1);
-
-					JLabel lastTime = new JLabel(roomView.lastTime, SwingConstants.RIGHT);
-					lastTime.setForeground(Color.GRAY);
-					lastTime.setBounds(210, 10, 80, 20);
-					lastTime.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-					gbc1.gridx = 5;
-					gbc1.gridy = 0;
-					gbc1.gridwidth = 1;
-					gbc1.gridheight = 1;
-					roomPanel.add(lastTime, gbc1);
-
-					JLabel lastMsg = new JLabel(roomView.lastMsg, SwingConstants.LEFT);
-					lastMsg.setBounds(20, 30, 200, 20);
-					lastMsg.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
-					lastMsg.setForeground(Color.GRAY);
-					gbc1.gridx = 0;
-					gbc1.gridy = 1;
-					gbc1.gridwidth = 4;
-					gbc1.gridheight = 1;
-					roomPanel.add(lastMsg, gbc1);
-
-					GridBagConstraints gbc2 = new GridBagConstraints();
-					gbc2.gridwidth = GridBagConstraints.REMAINDER;
-					gbc2.weightx = 1;
-					gbc2.fill = GridBagConstraints.HORIZONTAL;
-					chatListScrollPanel.add(roomPanel, gbc2, chatListIdx);
-					chatListIdx++;
-
-					break;
-				}
-
-			}
-
-		}
-		chatListScrollPanel.revalidate();
-		chatListScrollPanel.repaint();
-	}
+//	public void printChatRoomList() { // 채팅방 리스트 출력
+//
+//		chatListIdx = 0;
+//		chatListScrollPanel = new JPanel(new GridBagLayout());
+//		chatListScrollPanel.setBackground(backColor);
+//		GridBagConstraints gbc = new GridBagConstraints();
+//		gbc.gridwidth = GridBagConstraints.REMAINDER;
+//		gbc.weightx = 1;
+//		gbc.weighty = 1;
+//		JPanel p = new JPanel();
+//		p.setBackground(backColor);
+//		chatListScrollPanel.add(p, gbc);
+//		chatListScrollPane.setViewportView(chatListScrollPanel);
+//
+//		for (int i = 0; i < chatRoomVec.size(); i++) {
+//			ChatRoom room = chatRoomVec.elementAt(i);
+//			for (int j = 0; j < chatRoomViewVec.size(); j++) {
+//				ChatClientChat roomView = chatRoomViewVec.elementAt(j);
+//				if (room.getRoomId() == roomView.RoomId) {
+//					if (room.getLastMsg().equals("null") || room.getLastMsg() == null) {
+//						roomView.lastMsg = "대화 없음";
+//					} else {
+//						roomView.lastMsg = room.getLastMsg();
+//						roomView.lastTime = room.getLastTime();
+//					}
+//
+//					JPanel roomPanel = new JPanel(new GridBagLayout());
+//					roomPanel.setBorder(new LineBorder(backColor, 3));
+//					GridBagConstraints gbc1 = new GridBagConstraints();
+//
+//					roomPanel.setPreferredSize(new Dimension(298, 60));
+//					roomPanel.setBackground(Color.white);
+//					roomPanel.addMouseListener(new MouseListener() {
+//
+//						@Override
+//						public void mouseClicked(MouseEvent e) {
+//							// TODO Auto-generated method stub
+//							roomView.setBounds(clientView.getLocation().x, clientView.getLocation().y, 350, 500);
+//							roomView.setVisible(true);
+//						}
+//
+//						@Override
+//						public void mousePressed(MouseEvent e) {
+//							// TODO Auto-generated method stub
+//
+//						}
+//
+//						@Override
+//						public void mouseReleased(MouseEvent e) {
+//							// TODO Auto-generated method stub
+//
+//						}
+//
+//						@Override
+//						public void mouseEntered(MouseEvent e) {
+//							// TODO Auto-generated method stub
+//
+//						}
+//
+//						@Override
+//						public void mouseExited(MouseEvent e) {
+//							// TODO Auto-generated method stub
+//
+//						}
+//
+//					});
+//
+//					JLabel lblRoomName = new JLabel(roomView.RoomName, SwingConstants.LEFT);
+//					lblRoomName.setBackground(backColor);
+//					lblRoomName.setPreferredSize(new Dimension(200, 20));
+//					lblRoomName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+//					gbc1.gridx = 0;
+//					gbc1.gridy = 0;
+//					gbc1.gridwidth = 5;
+//					gbc1.gridheight = 1;
+//					roomPanel.add(lblRoomName, gbc1);
+//
+//					JLabel lastTime = new JLabel(roomView.lastTime, SwingConstants.RIGHT);
+//					lastTime.setForeground(Color.GRAY);
+//					lastTime.setBounds(210, 10, 80, 20);
+//					lastTime.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+//					gbc1.gridx = 5;
+//					gbc1.gridy = 0;
+//					gbc1.gridwidth = 1;
+//					gbc1.gridheight = 1;
+//					roomPanel.add(lastTime, gbc1);
+//
+//					JLabel lastMsg = new JLabel(roomView.lastMsg, SwingConstants.LEFT);
+//					lastMsg.setBounds(20, 30, 200, 20);
+//					lastMsg.setFont(new Font("맑은 고딕", Font.PLAIN, 13));
+//					lastMsg.setForeground(Color.GRAY);
+//					gbc1.gridx = 0;
+//					gbc1.gridy = 1;
+//					gbc1.gridwidth = 4;
+//					gbc1.gridheight = 1;
+//					roomPanel.add(lastMsg, gbc1);
+//
+//					GridBagConstraints gbc2 = new GridBagConstraints();
+//					gbc2.gridwidth = GridBagConstraints.REMAINDER;
+//					gbc2.weightx = 1;
+//					gbc2.fill = GridBagConstraints.HORIZONTAL;
+//					chatListScrollPanel.add(roomPanel, gbc2, chatListIdx);
+//					chatListIdx++;
+//
+//					break;
+//				}
+//
+//			}
+//
+//		}
+//		chatListScrollPanel.revalidate();
+//		chatListScrollPanel.repaint();
+//	}
 
 	public class CheckBoxFrame extends JFrame {
 		private static final long serialVersionUID = 1L;

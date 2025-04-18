@@ -19,4 +19,8 @@ public class SettingView extends BaseView {
 		
 	}
 
+	public int calculatePanelHeight() {
+		return 0;
+	}
+
 }

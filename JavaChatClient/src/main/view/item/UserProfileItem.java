@@ -1,5 +1,6 @@
 package main.view.item;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -33,10 +34,9 @@ public class UserProfileItem extends BaseProfileItem {
 		//super(parent, user);
 		super(user);
 		this.parent = parent;
-		setBorder(new EmptyBorder(5, 5, 5, 5));
 		
 		
-		
+	
 		// 친구 버튼 추가
 		btnUser  = new JButton(); 
 		btnUser.setPreferredSize(new Dimension(125, 30));
@@ -115,9 +115,10 @@ public class UserProfileItem extends BaseProfileItem {
 		} else if (user.getId().equals(userName)) { // 나
 			btnUser.setText("나");
 		} 
-		add(btnUser);
-
+		contentPane.add(btnUser);
 		
+
+		this.setVisible(true);
 		
 //		if (!user.getId().equals(parent.getUserName())) { // 다른 사용자
 //			if (user.getData().equals("friend")) { 		// case1) 친구

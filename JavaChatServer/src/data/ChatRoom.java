@@ -1,43 +1,59 @@
 package data;
+import java.io.Serializable;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-public class ChatRoom {
+public class ChatRoom implements Serializable{
 	
+	private static final long serialVersionUID = 1L;
 	private int roomId = -1;
-	private String userList;
+	private String userName;
+	private String userNames = "";
 	private String[] userNameList;
 	private String roomName;
 	private JPanel roomImg;
-	private String lastMsg;
-	private String lastTime;
+	private String lastMsg = "대화없음";
+	private String lastTime = " ";
 	private Vector<ChatMsg> chatMsgs = new Vector<ChatMsg>();
 	
 	private ImageIcon emoticon;
 	
 	
-	private ImageIcon chatImg_ori;
-	private ImageIcon chatImg_resized;
+	private ImageIcon chatImg;
+	//private ImageIcon chatImg_resized;
 	
 	public ChatRoom(int id, String nameList){
 		roomId = id;
-		userList = nameList;
+		userNames = nameList;
 		userNameList = nameList.split(" ");
-		roomName = userList.replaceAll(" ", ", ");
+		userName = userNameList[0];
+		
+		// 채팅방 이름 설정
+		if(userNameList.length == 1) { // 나만 있는 채팅방
+			roomName = userNameList[0];
+		}else if(userNameList.length == 2){
+			roomName = userNameList[1];
+		}else {
+			for(int i=1;i<userNameList.length;i++) {
+				roomName += userNameList[i] + ", ";
+			}
+			roomName = roomName.substring(0, roomName.length()-2);
+		}
+		
 	}
 	
 	public int getRoomId() {
 		return roomId;
 	}
 	
-	public String getUserList() {
-		return userList;
+	public String getUserNames() {
+		return userNames;
 	}
 	
 	public void addUser(String user) {
-		userList = userList + " user";
+		userNames = userNames + " user";
 	}
 	
 	public void exitUser(String user) {
@@ -86,20 +102,20 @@ public class ChatRoom {
 		return chatMsgs;
 	}
 	
+//	public void setChatImg(ImageIcon img) {
+//		this.chatImg_resized = img;
+//	}
+//	
+//	public ImageIcon getChatImg() {
+//		return chatImg_resized;
+//	}
+//	
 	public void setChatImg(ImageIcon img) {
-		this.chatImg_resized = img;
+		this.chatImg = img;
 	}
 	
 	public ImageIcon getChatImg() {
-		return chatImg_resized;
-	}
-	
-	public void setChatImg_ori(ImageIcon img) {
-		this.chatImg_ori = img;
-	}
-	
-	public ImageIcon getChatImg_ori() {
-		return chatImg_ori;
+		return chatImg;
 	}
 	public void setRoomId(int id) {
 		this.roomId = id;
@@ -107,7 +123,7 @@ public class ChatRoom {
 	
 	
 	public void setUserList(String list) {
-		userList = list;
+		userNames = list;
 	}
 	
 	public void setEmoticon(ImageIcon icon) {

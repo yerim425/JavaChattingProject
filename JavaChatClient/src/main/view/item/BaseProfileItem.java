@@ -1,5 +1,6 @@
 package main.view.item;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -33,19 +34,26 @@ public abstract class BaseProfileItem extends JPanel {
 	
 	protected String userName; // user.getData() 문자열을 "/"으로 자른 0번째 데이터
 	protected String dataMsg; // .. 1번째 데이터
-	
+	protected JPanel contentPane;
 	
 
 	public BaseProfileItem(ChatMsg user) {
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(325, 60));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
+		setOpaque(false);
+		setAlignmentX(LEFT_ALIGNMENT); 
+		
+		contentPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    contentPane.setBorder(new EmptyBorder(5,5,5,5));
+	    contentPane.setBackground(resources.Colors.MAIN_BLUE_COLOR);
+	    contentPane.setOpaque(true);
 		//this.parent = parent;
 		this.user = user;
 		
 		String[] str = user.getData().split("/");
 		userName = str[0]; 
 		dataMsg = str[1];
-
-		setLayout(new FlowLayout());
-		setBackground(resources.Colors.MAIN_BG_COLOR);
 
 		// 유저 프로필 사진 (버튼)
 		btnProfileImg = new JButton();
@@ -60,7 +68,7 @@ public abstract class BaseProfileItem extends JPanel {
 			}
 
 		});
-		add(btnProfileImg);
+		contentPane.add(btnProfileImg);
 
 		// 유저 닉네임
 		lbluserName = new JLabel(userName);
@@ -68,8 +76,9 @@ public abstract class BaseProfileItem extends JPanel {
 		lbluserName.setFont(resources.Fonts.MAIN_BOLD_16);
 		lbluserName.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
 		lbluserName.setPreferredSize(new Dimension(115, 30));
-		add(lbluserName);
-
+		contentPane.add(lbluserName);
+		
+		add(contentPane, BorderLayout.CENTER);
 	}
 
 	// 프로필에 적용할 사진 resize

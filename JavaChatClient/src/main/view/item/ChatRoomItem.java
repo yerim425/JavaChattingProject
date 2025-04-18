@@ -1,5 +1,6 @@
 package main.view.item;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -28,6 +29,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 import data.ChatMsg;
 import data.ChatRoom;
 import main.ChatClientChat;
+import main.ChatClientMain;
 import main.view.ChatRoomListView;
 import main.view.UserListView;
 
@@ -44,27 +46,31 @@ public class ChatRoomItem extends JPanel {
 	private JLabel lastTime;
 	private JLabel lastMsg;
 	
-	//private Vector<ChatRoom> chatRoomVec;
-	
 	private ChatClientChat chatClientView;
 	
 	public ChatRoomItem(ChatRoomListView parent, ChatRoom roomData) {
-		//super(parent, user);
-		//super(user);
 		this.parent = parent;
 		this.roomData = roomData;
-		//setLayout(new GridBagLayout());
-		setLayout(null);
-		setBackground(resources.Colors.MAIN_WHITE_COLOR);
+		
+		setLayout(new BorderLayout());
+		setPreferredSize(new Dimension(325, 60));
+		setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
 		setOpaque(false);
-		setSize(this.getWidth(), 60);
-		setBorder(new LineBorder(resources.Colors.MAIN_BLUE2_COLOR, 3));
+		setAlignmentX(LEFT_ALIGNMENT); 
+		
+		
+		contentPane = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	    contentPane.setBorder(new EmptyBorder(5,5,5,5));
+	    contentPane.setBackground(resources.Colors.MAIN_BLUE2_COLOR);
+	    contentPane.setOpaque(true);
+		//contentPane.setBorder(new LineBorder(resources.Colors.MAIN_BLUE2_COLOR, 5));
 		
 		addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				chatClientView = new ChatClientChat(parent, roomData);
+				chatClientView.setBounds(350, 300, 350, 550);
 				chatClientView.setVisible(true);
 			}
 
@@ -82,48 +88,34 @@ public class ChatRoomItem extends JPanel {
 			
 		});
 		
-		//GridBagConstraints gbc1 = new GridBagConstraints();
-		
 		// 채팅방 이름
 		lblRoomName = new JLabel(roomData.getRoomName());
-		lblRoomName.setBounds(0,0,200,20);
 		lblRoomName.setPreferredSize(new Dimension(200, 20));
 		lblRoomName.setFont(resources.Fonts.MAIN_BOLD_14);
-//		gbc1.gridx = 0;
-//		gbc1.gridy = 0;
-//		gbc1.gridwidth = 5;
-//		gbc1.gridheight = 1;
-//		add(lblRoomName, gbc1);
-		add(lblRoomName);
+		contentPane.add(lblRoomName);
 		
 		// 마지막으로 보낸 채팅 시간
 		lastTime = new JLabel(roomData.getLastTime(), SwingConstants.RIGHT);
 		lastTime.setForeground(Color.GRAY);
-		lastTime.setBounds(210, 10, 80, 20);
-		lastTime.setFont(resources.Fonts.MAIN_BOLD_12);
-//		gbc1.gridx = 5;
-//		gbc1.gridy = 0;
-//		gbc1.gridwidth = 1;
-//		gbc1.gridheight = 1;
-//		roomPanel.add(lastTime, gbc1);
-		add(lastTime);
+		lastTime.setPreferredSize(new Dimension(80, 20));
+		lastTime.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+		lastTime.setFont(resources.Fonts.MAIN_PLAIN_12);
+		contentPane.add(lastTime);
 		
 		// 마지막으로 보낸 채팅 메시지
-		JLabel lastMsg = new JLabel(roomData.getLastMsg(), SwingConstants.LEFT);
-		lastMsg.setBounds(20, 30, 200, 20);
-		lastMsg.setFont(resources.Fonts.MAIN_BOLD_12);
-		lastMsg.setForeground(Color.GRAY);
-//		gbc1.gridx = 0;
-//		gbc1.gridy = 1;
-//		gbc1.gridwidth = 4;
-//		gbc1.gridheight = 1;
-//		roomPanel.add(lastMsg, gbc1);
+		lastMsg = new JLabel(roomData.getLastMsg(), SwingConstants.LEFT);
+		//lastMsg.setBounds(20, 30, 200, 20);
+		lastMsg.setPreferredSize(new Dimension(200, 20));
+		lastMsg.setFont(resources.Fonts.MAIN_PLAIN_12);
+		lastMsg.setForeground(resources.Colors.MAIN_WHITE_COLOR);
+		contentPane.add(lastMsg);
 		
+		add(contentPane, BorderLayout.CENTER);
 		
-
+		setVisible(true);
 	}
 
-	public void setroomData(ChatRoom roomData) {
+	public void setRoomData(ChatRoom roomData) {
 		lastMsg.setText(roomData.getLastMsg());
 		lastTime.setText(roomData.getLastTime());
 		

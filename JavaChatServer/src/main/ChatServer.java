@@ -217,7 +217,7 @@ public class ChatServer extends JFrame {
 		}
 
 		public void Logout() {
-			String msg = "[" + UserName + "]님이 퇴장 하였습니다.\n";
+			//String msg = "[" + UserName + "]님이 퇴장 하였습니다.\n";
 			UserStatus = "S";
 			// if(!SleepUserVec.contains(this))
 			// SleepUserVec.addElement(this); // 서버가 관리하는 Sleep 유저 리스트에 추가
@@ -701,9 +701,12 @@ public class ChatServer extends JFrame {
 						
 						Vector<ChatRoom> vec = new Vector<ChatRoom>();
 						for(ChatRoom room : ChatRoomVec) {
-							if(room.getUserList().contains(UserName)) {
-								vec.addElement(room);
+							for(String name : room.getUserNameList()) {
+								if(name.equals(UserName)) {
+									vec.addElement(room);
+								}
 							}
+							
 						}
 						
 						ChatMsg cm2 = new ChatMsg(UserName, "800", cm.getData()); // "refresh, all"
@@ -714,21 +717,23 @@ public class ChatServer extends JFrame {
 
 					else if (cm.getCode().equals("810")) { // 채팅방 만들기
 						
-						// 여기서 output 할때가 문제...
-						// ChatMsg, ChatRoom 각 클래스가 내용 같은지 확인!!
-						ChatRoom cr = new ChatRoom(roomId++, cm.getData()); // Data : user list
+						
+						ChatRoom cr = new ChatRoom(roomId++, cm.getData()); // Data : user names String
 						ChatRoomVec.add(cr);
-
-						for (int i = 0; i < user_vc.size(); i++) { // 모든 유저들에 대해서
-							UserService user = (UserService) user_vc.elementAt(i);
-							if (cm.getData().contains(user.UserName)) { // 초대한 유저와 초대된 유저들만
-								
-								// 채팅방 리스트에 새로 추가한 채팅방 아이템 추가
-								ChatMsg mr = new ChatMsg(user.UserName, "810", "add room", cr);
-								if (user.UserStatus.matches("O")) // 친구는 온라인 상태라면 채팅방 정보 넘김
+						
+						// 채팅방 리스트에 새로 추가한 채팅방 아이템 추가
+						for(String name : cr.getUserNameList()) { // getData : user names String
+							for(UserService user : user_vc) {
+								 // 채팅방 멤버들에게 전송
+								if(name.equals(user.UserName) && user.UserStatus.equals("O")) {
+									ChatMsg mr = new ChatMsg(user.UserName, "810", "add room");
+									mr.setRoomData(cr);
 									user.WriteOneObject(mr);
+								}
 							}
 						}
+						
+						
 					}
 //					else if (cm.getCode().matches("811")) { // 변경된 lastTime, lastMsg를 다른 유저의 리스트에도 출력하기 위한 채팅방 리스트
 //																// 새로고침

@@ -14,5 +14,7 @@ public class Colors {
 	public static final Color MAIN_BLUE2_COLOR = new Color(116, 155, 194);
 	public static final Color MAIN_DARK_BLUE_COLOR = new Color(12, 40, 108);
 	public static final Color MAIN_PURPLE_COLOR = new Color(74, 98, 138);
+	public static final Color MAIN_BG2_COLOR = new Color(116, 155, 194);
+	public static final Color MAIN_BEIGE_COLOR = new Color(250, 241, 230);
 	
 }

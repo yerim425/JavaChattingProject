@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 
 import data.ChatMsg;
 import main.ChatClientMain;
+import main.view.item.ChatRoomItem;
 
 public abstract class BaseView extends JPanel {
 
@@ -27,6 +28,9 @@ public abstract class BaseView extends JPanel {
 		this.parent = parent;
 		this.userName = name;
 		this.profileImg = new ImageIcon("src/images/profile_default.png");
+		
+		
+		
 	}
 
 	
@@ -39,5 +43,6 @@ public abstract class BaseView extends JPanel {
 		return new ImageIcon(img.getScaledInstance(size, size, Image.SCALE_SMOOTH));
 
 	}
+	
 
 }

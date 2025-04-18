@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -19,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 
 import data.ChatMsg;
 import main.ChatClientMain;
+import main.view.item.ChatRoomItem;
 import main.view.item.FriendProfileItem;
 
 public class FriendView extends BaseView {
@@ -47,7 +50,6 @@ public class FriendView extends BaseView {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setBounds(0, 0, 335, 510);
 		setLayout(null);
-		setVisible(true);
 		setBackground(resources.Colors.MAIN_BG_COLOR);
 
 		// "나"
@@ -105,20 +107,21 @@ public class FriendView extends BaseView {
 
 		
 		//initFriendList();
-		friendListPanel = new JPanel(new GridBagLayout());
+		friendListPanel = new JPanel();
+		friendListPanel.setLayout(new BoxLayout(friendListPanel, BoxLayout.Y_AXIS));
 		friendListPanel.setBackground(resources.Colors.MAIN_BG_COLOR);
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.weighty = 0;
-		JPanel p = new JPanel();
-		p.setBackground(resources.Colors.MAIN_BG_COLOR);
-		friendListPanel.add(p, gbc);
-		
+		friendListPanel.setOpaque(true);
+		friendListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
+		friendListPanel.setAlignmentY(TOP_ALIGNMENT);
 		
 
 		friendListScrollPane = new JScrollPane(friendListPanel);
+		friendListScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		friendListScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		friendListScrollPane.setBounds(10, 140, 325, 370);
+		friendListScrollPane.getViewport().setOpaque(false);
+		friendListScrollPane.setOpaque(false);
+		friendListScrollPane.setBorder(null);
 		friendListScrollPane.setBackground(resources.Colors.MAIN_BG_COLOR);
 		// userListScrollPane.setPreferredSize(new Dimension(300, 330));
 		add(friendListScrollPane);
@@ -135,19 +138,10 @@ public class FriendView extends BaseView {
 	public void addFriend(ChatMsg cm) {
 		
 		FriendProfileItem friend = new FriendProfileItem(this, cm);
-//		FriendVec.add(friend);
+		friendListPanel.add(friend);
+		friendListPanel.add(Box.createVerticalStrut(10));
 		
-		GridBagConstraints gbc = new GridBagConstraints();
-		gbc.gridwidth = GridBagConstraints.REMAINDER;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		
-		friendListPanel.add(((JPanel)friend), gbc, friendListIdx);
-		friendListIdx++;
-		
-		
-		//friendListPanel.add(((JPanel)friend), gbc, FriendVec.size()-1);
-
+		friendListPanel.setPreferredSize(new Dimension(325, calculatePanelHeight()));
 		
 		friendListPanel.revalidate();
 		friendListPanel.repaint();
@@ -179,11 +173,9 @@ public class FriendView extends BaseView {
 
 		friendListPanel.removeAll();
 		
-		// 이거 두개 필요한가?
 		friendListPanel.revalidate();
 		friendListPanel.repaint();
 		
-		friendListIdx = 0;
 	}
 	
 	// 내 프로필 setting
@@ -199,6 +191,19 @@ public class FriendView extends BaseView {
 		// TODO Auto-generated method stub
 		parent.SendObject(cm);
 		
+	}
+	
+	public int calculatePanelHeight() {
+		int itemCount = 0;
+		
+	    for (int i = 0; i < friendListPanel.getComponentCount(); i++) {
+	        if (friendListPanel.getComponent(i) instanceof FriendProfileItem) {
+	            itemCount++;
+	        }
+	    }
+	    int itemHeight = 60; 
+	    int spacing = 10;
+	    return itemCount * (itemHeight + spacing);
 	}
 
 }

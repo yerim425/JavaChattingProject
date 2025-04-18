@@ -4,6 +4,7 @@
 package main;
 
 import java.awt.FileDialog;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -27,6 +28,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -37,6 +39,7 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
@@ -50,6 +53,8 @@ import javax.swing.text.StyledDocument;
 import data.ChatMsg;
 import data.ChatRoom;
 import main.view.ChatRoomListView;
+import main.view.item.ChatItem;
+import main.view.item.ChatRoomItem;
 
 
 
@@ -60,23 +65,20 @@ public class ChatClientChat extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private ChatClientMain mainView; 
 	private JFrame myFrame = this;
-	private JPanel contentPane;
-	public JScrollPane scrollPane;
-	private JTextField txtInput;
-	public String UserName;
+	
+	
+	
 	public int RoomId;
-	private JButton btnSend;
 	private static final int BUF_LEN = 128; // Windows ó�� BUF_LEN �� ����
 	
 	private JLabel lblRoomName;
-	public JTextPane textArea;
+	
 	
 	private Frame frame;
 	private FileDialog fd;
 	
-	private JButton btnBack; // ä�ù� ������
-	private JButton btnPlus; // �̹��� ������
-	private JButton btnSmile; // �̸�Ƽ�� ������
+	
+	
 	
 	private Color backColor = new Color(115, 175, 255);
 	
@@ -92,106 +94,210 @@ public class ChatClientChat extends JFrame{
 	private JButton[] emoticonbtns = new JButton[12];
 	private ImageIcon[] emoticons = new ImageIcon[12];
 	private Vector<Emoticon> emoticonVec = new Vector<Emoticon>();
-	private EmoticonFrame emoView;
+	
+	
+	
 //------------------------------------
 	private ChatRoomListView parent;
 	private ChatRoom roomData;
+	private String UserName;
+	
+	private JPanel contentPane;
+	private JButton btnBack; // 뒤로가기 버튼
+	private JButton btnPlus; // 이미지 보내기 버튼
+	private JButton btnSmile; // 이모티콘 보내기 버튼
+	private JButton btnSend; // 텍스트 보내기 버튼
+	
+	private JScrollPane scrollPane; // 채팅 스크롤 공간
+	private JPanel chatPanel; // 채팅 화면
+	
+	private EmoticonFrame emoticonView; // 이모티콘 선택 창
+	
+	//public JTextPane textArea; // 메시지 텍스트 
+	private JTextField txtInput; // 메시지 입력 칸
+	
+	
 	
 	public ChatClientChat(ChatRoomListView parent, ChatRoom roomData) {
 		this.parent = parent;
 		this.roomData = roomData;
+		this.UserName = roomData.getUserNameList()[0];
+		setResizable(false);
+		setLayout(new BorderLayout());
+		setTitle(resources.Strings.BUGI_TALK);
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		contentPane = new JPanel(null);
+		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+		contentPane.setBounds(0,0,350, 550);
+		contentPane.setBackground(resources.Colors.MAIN_BG2_COLOR);
+		contentPane.setOpaque(true);
+		setContentPane(contentPane);
+		
+		// 뒤로 가기 버튼
+		btnBack = new JButton();
+		btnBack.setBounds(10, 10, 25, 25);
+		btnBack.setIcon(imageResized(new ImageIcon("src/btnIcons/back.png"), 25));
+		btnBack.setBorder(new EmptyBorder(0,0,0,0));
+		btnBack.setOpaque(false);
+		
+		btnBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				dispose();
+			}
+		});
+		contentPane.add(btnBack);
+
+		// 채팅방 이름
+		lblRoomName = new JLabel();
+		lblRoomName.setText(roomData.getRoomName());
+		lblRoomName.setBounds(10, 10, 330, 25);
+		lblRoomName.setHorizontalAlignment(JLabel.CENTER);
+		lblRoomName.setFont(resources.Fonts.MAIN_BOLD_15);
+		lblRoomName.setForeground(resources.Colors.MAIN_DARK_BLUE_COLOR);
+		lblRoomName.setPreferredSize(new Dimension(290, 25));
+		lblRoomName.setOpaque(false);
+		contentPane.add(lblRoomName);
+		
+		
+		// 채팅 화면
+		chatPanel = new JPanel();
+		chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
+		chatPanel.setPreferredSize(new Dimension(330, calculatePanelHeight()));
+		chatPanel.setAlignmentY(TOP_ALIGNMENT);
+		chatPanel.setOpaque(false);
+		
+		// 채팅 스크롤 공간
+		scrollPane = new JScrollPane(chatPanel);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.getViewport().setOpaque(false);
+		scrollPane.setOpaque(true);
+		scrollPane.setBorder(null);
+		scrollPane.setBounds(10, 45, 330, 430);
+		scrollPane.setBackground(resources.Colors.MAIN_BLUE_COLOR);
+		contentPane.add(scrollPane);
+		
+		// 이모티콘 선택 버튼
+		btnSmile = new JButton();
+		btnSmile.setBounds(10, 485, 25, 25);
+		btnSmile.setIcon(imageResized(new ImageIcon("src/btnIcons/smile.png"), 25));
+		btnBack.setBorder(new EmptyBorder(0,0,0,0));
+		btnBack.setOpaque(false);
+		btnSmile.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				emoticonView = new EmoticonFrame();
+				emoticonView.setVisible(true);
+			}
+			
+		});
+		contentPane.add(btnSmile);
+		
+		// 이미지 선택 버튼
+		btnPlus = new JButton();
+		btnPlus.setBounds(40, 485, 25, 25);
+		btnPlus.setIcon(imageResized(new ImageIcon("src/btnIcons/plus.png"), 25));
+		btnPlus.setBorder(new EmptyBorder(0,0,0,0));
+		btnPlus.setOpaque(false);
+		btnPlus.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				//frame = new Frame("이미지 선택"); 
+				// 이미지 선택 다이얼로그 띄우기
+				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD); 
+				fd.setVisible(true);
+				
+				
+				
+				
+				ImageIcon selectIcon = new ImageIcon(fd.getDirectory() + fd.getFile());
+				
+				
+				ChatMsg cm = new ChatMsg(UserName, "300", "image");
+				ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
+				cr.setChatImg(selectIcon);
+				cm.setRoomData(cr);
+				//cm.setTime(calcTime()); // 이건 서버에서 계산해서 저장
+				
+				// 이미지 사이즈 조정 -- 나중에 실행해보고 안되면 수정
+//				Image selectImg = selectIcon.getImage();
+//				int width, height;
+//				double ratio;
+//				width = selectIcon.getIconWidth();
+//				height = selectIcon.getIconHeight();
+//				if (width > 300 || height > 300) {
+//					if (width > height) { // ���� ����
+//						ratio = (double) height / width;
+//						width = 300;
+//						height = (int) (width * ratio);
+//					} else { // ���� ����
+//						ratio = (double) width / height;
+//						height = 300;
+//						width = (int) (height * ratio);
+//					}
+//					selectImg = selectImg.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+//					cm.setChatImg(new ImageIcon(selectImg));
+//				} else
+//					cm.setChatImg(selectIcon);
+				
+				parent.SendObject(cm);
+			}
+		});
+		contentPane.add(btnPlus);
+
+		// 메시지 텍스트 입력 칸
+		txtInput = new JTextField(15);
+		txtInput.setBounds(70, 485, 240, 25);
+		txtInput.setFont(resources.Fonts.MAIN_BOLD_15);
+		txtInput.setOpaque(true);
+		txtInput.setBackground(resources.Colors.MAIN_WHITE_COLOR);
+		contentPane.add(txtInput);
+		
+		// 보내기 버튼
+		btnSend = new JButton();
+		btnSend.setBounds(315, 485, 22, 22);
+		btnSend.setIcon(imageResized(new ImageIcon("src/btnIcons/send.png"), 22));
+		btnSend.setBorder(new EmptyBorder(0,0,0,0));
+		btnSend.setOpaque(false);
+		btnSend.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ChatMsg cm = new ChatMsg(UserName, "200", "message");
+				ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
+				cr.setLastMsg(txtInput.getText().trim());
+				cm.setRoomData(cr);
+				parent.SendObject(cm);
+				
+				txtInput.setText("");
+			}
+		});
+		contentPane.add(btnSend);
+	
 	}
 
+
+	
+	
 	/**
 	 * Create the frame.
 	 */
 //	public ChatClientChat(ChatClientMain parent, String username, int room_id, String userlist) {
-//		setResizable(false);
-//		mainView = parent;
-//		setTitle(username + "�� ä��ȭ��");
 //		
-//		UserName = username;
-//		RoomId = room_id;
-//		userList = userlist;
-//		userNameArr = userlist.split(" ");
-//		lastMsg = "";
 //		lastTime = ""; oldTime = "";
 //		newUser = ""; oldUser = "";
 //	
-//		
-//		if(userNameArr.length == 1) {
-//			RoomName = username;
-//		}else if(userNameArr.length == 2) {
-//			for(int i=0;i<2;i++) {
-//				if(!userNameArr[i].matches(username)) {
-//					RoomName = userNameArr[i];
-//				}
-//			}	
-//		}else {
-//			String str = "";
-//			for(int i=0;i<userNameArr.length;i++) {
-//				if(!userNameArr[i].matches(username)) {
-//					if(i+1 == userNameArr.length-1 && userNameArr[i+1].matches(username))
-//						str = str + userNameArr[i];
-//					else {
-//						if(i == userNameArr.length-1)
-//							str = str + userNameArr[i];
-//						else {
-//							str = str + userNameArr[i] + ", ";
-//						}
-//					}
-//				}
-//			}
-//			
-//			RoomName = str;
-//		}
-//		
-//		
-//		contentPane = new JPanel();
-//		contentPane.setBackground(backColor);
-//		setContentPane(contentPane);
-//		contentPane.setLayout(null);
-//		
-//		// ä�ù� ������ ��ư
-//		btnBack = new JButton(new ImageIcon("src/btnIcons/back.png"));
-//		btnBack.setBackground(backColor);
-//		btnBack.setBorderPainted(false);
-//		btnBack.setBounds(10, 5, 30, 30);
-//		btnBack.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// TODO Auto-generated method stub
-//				setVisible(false);
-//			}
-//			
-//		});
-//		contentPane.add(btnBack);
-//		
-//		// ä�ù� �̸� ��
-//		lblRoomName = new JLabel(RoomName);
-//		lblRoomName.setBounds(55, 5, 300, 30);
-//		lblRoomName.setFont(new Font("���� ���", Font.BOLD, 15));
-//		contentPane.add(lblRoomName);
-//		
-//		
-//		scrollPane = new JScrollPane();
-//		scrollPane.setBounds(10, 40, 315, 360);
-//		scrollPane.setBackground(Color.white);
-//		contentPane.add(scrollPane);
-//
+//			//???
 //		textArea = new JTextPane();
 //		textArea.setEditable(false);
 //		textArea.setFont(new Font("���� ���", Font.PLAIN, 13));
 //		scrollPane.setViewportView(textArea);
 //		
-//		// �̹��� ������ ��ư
-//		btnPlus = new JButton(new ImageIcon("src/btnIcons/plus.png"));
-//		//btnPlus.setFont(new Font("���� ���", Font.BOLD, 13));
-//		btnPlus.setBackground(backColor);
-//		btnPlus.setBorderPainted(false);
-//		btnPlus.setBounds(10, 415, 30, 30);
-//		contentPane.add(btnPlus);
 //		
 //		// ä�� �޽��� �Է� 
 //		txtInput = new JTextField();
@@ -200,23 +306,7 @@ public class ChatClientChat extends JFrame{
 //		contentPane.add(txtInput);
 //		txtInput.setColumns(10);
 //		
-//		// �̸�Ƽ�� ������ ��ư
-//		btnSmile = new JButton(new ImageIcon("src/btnIcons/smile.png"));
-//		btnSmile.setBounds(257, 415, 30, 30);
-//		btnSmile.setFont(new Font("���� ���", Font.BOLD, 13));
-//		btnSmile.setBackground(backColor);
-//		btnSmile.setBorderPainted(false);
-//		btnSmile.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// TODO Auto-generated method stub
-//				emoView = new EmoticonFrame();
-//				emoView.setVisible(true);
-//			}
-//			
-//		});
-//		contentPane.add(btnSmile);
+//		
 //		
 //		// ä�� �޽��� ������ ��ư
 //		btnSend = new JButton(new ImageIcon("src/btnIcons/send.png"));
@@ -414,200 +504,200 @@ public class ChatClientChat extends JFrame{
 
 
 		
-		public void AppendIcon_text(ImageIcon icon_resized) {
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len);
-			
-			String user = newUser;
-			JLabel lbl = new JLabel();
-			lbl.setIcon(icon_resized);
-			lbl.addMouseListener(new MouseAdapter() {
-				 @Override
-		            public void mouseReleased(MouseEvent e) {
-					 	ChatMsg cm = new ChatMsg(user, "510", "origical image");
-					 	mainView.SendObject(cm);
-		            }
-			});
-			textArea.insertComponent(lbl);
-			
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet left = new SimpleAttributeSet();
-			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
-		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
-			try {
-				doc.insertString(doc.getLength(), " ", left );
-				textArea.setCaretPosition(textArea.getDocument().getLength());
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		public void AppendIcon_img(ImageIcon icon_resized) {
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len);
-			
-			String user = newUser;
-			JLabel lbl = new JLabel();
-			lbl.setIcon(icon_resized);
-			lbl.addMouseListener(new MouseAdapter() {
-				 @Override
-		            public void mouseReleased(MouseEvent e) {
-					 ChatMsg cm = new ChatMsg(user, "510", "origical image");
-					 	mainView.SendObject(cm);
-		            }
-			});
-			textArea.insertComponent(lbl);
-
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet left = new SimpleAttributeSet();
-			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
-		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
-			try {
-				doc.insertString(doc.getLength(), " ", left );
-				textArea.setCaretPosition(textArea.getDocument().getLength());
-				
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// ȭ�鿡 ���
-		public void AppendText_name(String msg) { 
-
-			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len); 
-			// ������ �̵�
-			
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet left = new SimpleAttributeSet();
-			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
-			StyleConstants.setForeground(left, Color.BLACK);
-			StyleConstants.setFontSize(left, 14);
-		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
-		    SimpleAttributeSet time = new SimpleAttributeSet();
-		    StyleConstants.setFontSize(time, 11);
-			try {
-				String[] data = msg.split("/");
-				newUser = data[0];
-				if(!data[1].equals(oldTime) || !newUser.equals(oldUser)) { //�ð��� �ٲ���ų�, �޽����� ���� ������ �ٸ���
-					doc.insertString(doc.getLength(), " "+newUser+ "  ", left );
-					doc.insertString(doc.getLength(), (oldTime = data[1]) + "\n", time );
-					oldUser = newUser;
-				}
-				else {
-					doc.insertString(doc.getLength(), " "+newUser+ "\n", left );
-				}
-
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		public void AppendText_msg(String msg) { 
-
-			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.
-			// ������ �̵�
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len); 
-			
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet left = new SimpleAttributeSet();
-			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
-			StyleConstants.setForeground(left, Color.BLACK);
-		    StyleConstants.setFontSize(left, 15);
-			doc.setParagraphAttributes(doc.getLength(), 1, left, false);
-		   
-			try {
-				doc.insertString(doc.getLength(), msg+"\n\n", left );
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		// ȭ�� ������ ���
-		public void AppendTextR_name(String msg) {
-			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len); 
-			
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet right = new SimpleAttributeSet();
-			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-			StyleConstants.setForeground(right, Color.BLACK); 
-			StyleConstants.setFontSize(right, 14);
-		    doc.setParagraphAttributes(doc.getLength(), 1, right, false);
-		    SimpleAttributeSet time = new SimpleAttributeSet();
-		    StyleConstants.setFontSize(time, 11);
-			try {
-				String[] data = msg.split("/");
-				newUser = data[0];
-				if(!data[1].equals(oldTime) || !newUser.equals(oldUser)) {//�ð��� �ٲ���ų�, �޽����� ���� ������ �ٸ���
-					doc.insertString(doc.getLength(), (oldTime = data[1]), time );
-					doc.insertString(doc.getLength(), "  "+newUser+ " \n", right );
-					oldUser = newUser;
-				}
-				else {
-					doc.insertString(doc.getLength(), newUser+ " \n", right );
-				}
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		public void AppendTextR_msg(String msg) {
-			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
-			
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len); 
-			
-			StyledDocument doc = textArea.getStyledDocument();
-			SimpleAttributeSet right = new SimpleAttributeSet();
-			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-			StyleConstants.setForeground(right, Color.BLACK);
-			StyleConstants.setFontSize(right, 15);
-		    doc.setParagraphAttributes(doc.getLength(), 1, right, false);
-			try {
-				doc.insertString(doc.getLength(),msg+" \n\n", right );
-				textArea.setCaretPosition(textArea.getDocument().getLength()); 
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		public void AppendImage(ImageIcon img_resized, ImageIcon img_ori) {
-			
-			int len = textArea.getDocument().getLength();
-			textArea.setCaretPosition(len); // place caret at the end (with no selection)	
-			
-			JLabel lbl = new JLabel();
-			lbl.setIcon(img_resized);
-			lbl.addMouseListener(new MouseAdapter() {
-				 @Override
-		            public void mouseReleased(MouseEvent e) {
-					 	ImgFrame imgFrame = new ImgFrame(img_ori);
-					 	
-					 	imgFrame.setBounds(myFrame.getLocation().x+100, myFrame.getLocation().y, 350, 350);
-					 	
-					 	imgFrame.setVisible(true);
-		            }
-			});
-			textArea.insertComponent(lbl);
-
-			StyledDocument doc = textArea.getStyledDocument();
-			try {
-				doc.insertString(doc.getLength(), "\n\n", null);
-				textArea.setCaretPosition(len = textArea.getDocument().getLength());
-				
-			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
+//		public void AppendIcon_text(ImageIcon icon_resized) {
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len);
+//			
+//			String user = newUser;
+//			JLabel lbl = new JLabel();
+//			lbl.setIcon(icon_resized);
+//			lbl.addMouseListener(new MouseAdapter() {
+//				 @Override
+//		            public void mouseReleased(MouseEvent e) {
+//					 	ChatMsg cm = new ChatMsg(user, "510", "origical image");
+//					 	mainView.SendObject(cm);
+//		            }
+//			});
+//			textArea.insertComponent(lbl);
+//			
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet left = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
+//		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
+//			try {
+//				doc.insertString(doc.getLength(), " ", left );
+//				textArea.setCaretPosition(textArea.getDocument().getLength());
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		public void AppendIcon_img(ImageIcon icon_resized) {
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len);
+//			
+//			String user = newUser;
+//			JLabel lbl = new JLabel();
+//			lbl.setIcon(icon_resized);
+//			lbl.addMouseListener(new MouseAdapter() {
+//				 @Override
+//		            public void mouseReleased(MouseEvent e) {
+//					 ChatMsg cm = new ChatMsg(user, "510", "origical image");
+//					 	mainView.SendObject(cm);
+//		            }
+//			});
+//			textArea.insertComponent(lbl);
+//
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet left = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
+//		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
+//			try {
+//				doc.insertString(doc.getLength(), " ", left );
+//				textArea.setCaretPosition(textArea.getDocument().getLength());
+//				
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		// ȭ�鿡 ���
+//		public void AppendText_name(String msg) { 
+//
+//			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len); 
+//			// ������ �̵�
+//			
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet left = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
+//			StyleConstants.setForeground(left, Color.BLACK);
+//			StyleConstants.setFontSize(left, 14);
+//		    doc.setParagraphAttributes(doc.getLength(), 1, left, false);
+//		    SimpleAttributeSet time = new SimpleAttributeSet();
+//		    StyleConstants.setFontSize(time, 11);
+//			try {
+//				String[] data = msg.split("/");
+//				newUser = data[0];
+//				if(!data[1].equals(oldTime) || !newUser.equals(oldUser)) { //�ð��� �ٲ���ų�, �޽����� ���� ������ �ٸ���
+//					doc.insertString(doc.getLength(), " "+newUser+ "  ", left );
+//					doc.insertString(doc.getLength(), (oldTime = data[1]) + "\n", time );
+//					oldUser = newUser;
+//				}
+//				else {
+//					doc.insertString(doc.getLength(), " "+newUser+ "\n", left );
+//				}
+//
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		public void AppendText_msg(String msg) { 
+//
+//			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.
+//			// ������ �̵�
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len); 
+//			
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet left = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(left, StyleConstants.ALIGN_LEFT);
+//			StyleConstants.setForeground(left, Color.BLACK);
+//		    StyleConstants.setFontSize(left, 15);
+//			doc.setParagraphAttributes(doc.getLength(), 1, left, false);
+//		   
+//			try {
+//				doc.insertString(doc.getLength(), msg+"\n\n", left );
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		// ȭ�� ������ ���
+//		public void AppendTextR_name(String msg) {
+//			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len); 
+//			
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet right = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
+//			StyleConstants.setForeground(right, Color.BLACK); 
+//			StyleConstants.setFontSize(right, 14);
+//		    doc.setParagraphAttributes(doc.getLength(), 1, right, false);
+//		    SimpleAttributeSet time = new SimpleAttributeSet();
+//		    StyleConstants.setFontSize(time, 11);
+//			try {
+//				String[] data = msg.split("/");
+//				newUser = data[0];
+//				if(!data[1].equals(oldTime) || !newUser.equals(oldUser)) {//�ð��� �ٲ���ų�, �޽����� ���� ������ �ٸ���
+//					doc.insertString(doc.getLength(), (oldTime = data[1]), time );
+//					doc.insertString(doc.getLength(), "  "+newUser+ " \n", right );
+//					oldUser = newUser;
+//				}
+//				else {
+//					doc.insertString(doc.getLength(), newUser+ " \n", right );
+//				}
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//		public void AppendTextR_msg(String msg) {
+//			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
+//			
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len); 
+//			
+//			StyledDocument doc = textArea.getStyledDocument();
+//			SimpleAttributeSet right = new SimpleAttributeSet();
+//			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
+//			StyleConstants.setForeground(right, Color.BLACK);
+//			StyleConstants.setFontSize(right, 15);
+//		    doc.setParagraphAttributes(doc.getLength(), 1, right, false);
+//			try {
+//				doc.insertString(doc.getLength(),msg+" \n\n", right );
+//				textArea.setCaretPosition(textArea.getDocument().getLength()); 
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		public void AppendImage(ImageIcon img_resized, ImageIcon img_ori) {
+//			
+//			int len = textArea.getDocument().getLength();
+//			textArea.setCaretPosition(len); // place caret at the end (with no selection)	
+//			
+//			JLabel lbl = new JLabel();
+//			lbl.setIcon(img_resized);
+//			lbl.addMouseListener(new MouseAdapter() {
+//				 @Override
+//		            public void mouseReleased(MouseEvent e) {
+//					 	ImgFrame imgFrame = new ImgFrame(img_ori);
+//					 	
+//					 	imgFrame.setBounds(myFrame.getLocation().x+100, myFrame.getLocation().y, 350, 350);
+//					 	
+//					 	imgFrame.setVisible(true);
+//		            }
+//			});
+//			textArea.insertComponent(lbl);
+//
+//			StyledDocument doc = textArea.getStyledDocument();
+//			try {
+//				doc.insertString(doc.getLength(), "\n\n", null);
+//				textArea.setCaretPosition(len = textArea.getDocument().getLength());
+//				
+//			} catch (BadLocationException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//		}
 
 		
 		// Windows ó�� message ������ ������ �κ��� NULL �� ����� ���� �Լ�
@@ -746,7 +836,32 @@ public class ChatClientChat extends JFrame{
 			case 7: dayOfWeek_str = "�Ͽ���"; break;
 			}
 			return (year+"�� "+month+"�� "+dayOfMonth+"�� "+dayOfWeek_str);
-		}		
+		}	
+		
+		//-----------
+		
+		
+		public ImageIcon imageResized(ImageIcon ori_icon, int size) {
+			Image img = ori_icon.getImage();
+			int width = ori_icon.getIconWidth();
+			int height = ori_icon.getIconHeight();
+
+			return new ImageIcon(img.getScaledInstance(size, size, Image.SCALE_SMOOTH));
+
+		}
+		
+		public int calculatePanelHeight() {
+			int itemCount = 0;
+			
+		    for (int i = 0; i < chatPanel.getComponentCount(); i++) {
+		        if (chatPanel.getComponent(i) instanceof ChatItem) {
+		            itemCount++;
+		        }
+		    }
+		    int itemHeight = 60; 
+		    int spacing = 10;
+		    return itemCount * (itemHeight + spacing);
+		}
 }
 
 
