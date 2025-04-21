@@ -139,7 +139,7 @@ public class ChatClientMain extends JFrame {
 
 	private int checkBoxPosY = 5;
 	private Vector<JCheckBox> checkBoxVec = new Vector<JCheckBox>();
-	private Vector<ChatClientChat> chatRoomViewVec = new Vector<ChatClientChat>();
+	private Vector<ChatClientRoom> chatRoomViewVec = new Vector<ChatClientRoom>();
 	private Vector<ChatRoom> chatRoomVec = new Vector<ChatRoom>();
 
 	int userListIdx = 0;
@@ -150,7 +150,10 @@ public class ChatClientMain extends JFrame {
 	String lastMsg;
 	String lastTime;
 
-	int check = 0;
+	int check = 0; //??
+	
+	// 현재 화면이 열려있는 채팅방
+	Vector<ChatClientRoom> openChatViewVec = new Vector<ChatClientRoom>();
 
 	/**
 	 * Create the frame.
@@ -293,24 +296,19 @@ public class ChatClientMain extends JFrame {
 						//SendObject(new ChatMsg(UserName, "830", "room list"));//?
 						
 						break;
-//					case "200": // chat message
-//						check++;
-//						// cm.msg를 cm.roomId의 room을 찾아 appendText
-//						for (int i = 0; i < chatRoomViewVec.size(); i++) {
-//							ChatClientChat cv = chatRoomViewVec.elementAt(i);
-//							if (cv.RoomId == cm.getRoomId()) {
-//								if (cm.getId().matches(UserName)) { // 내가 보낸 msg는 내 화면에서는 오른쪽에 출력
-//									cv.AppendTextR_name("[" + cm.getId() + "]/" + cm.getTime());
-//									cv.AppendTextR_msg(cm.getData());
-//								} else {
-//									cv.AppendText_name("[" + cm.getId() + "]/" + cm.getTime());
-//									cv.AppendIcon_text(cm.getProfileImg_resized());
-//									cv.AppendText_msg(cm.getData());
-//								}
-//
-//							}
-//						}
-//						break;
+					case "200": // chat message
+						check++;
+						// 해당하는 채팅방에 메시지를 출력
+						for(int i=0;i<openChatViewVec.size();i++) { // 현재 열려있는 채팅방 중에
+							ChatClientRoom view = openChatViewVec.elementAt(i);
+							System.out.println(view.getRoomId()+", "+cm.getRoomData().getRoomId());
+							if(view.getRoomId() == cm.getRoomData().getRoomId()) {
+								view.AppendMessage(cm);
+								System.out.println("client main-200");
+							}
+							
+						}
+						break;
 //					case "300": // Image 첨부
 //						for (int i = 0; i < chatRoomViewVec.size(); i++) {
 //							ChatClientChat cv = chatRoomViewVec.elementAt(i);
@@ -420,6 +418,7 @@ public class ChatClientMain extends JFrame {
 						//lastMsg = "/대화 없음";
 						
 						chatRoomListViewPanel.addRoom(cm.getRoomData());
+						
 						//System.out.println("cliend recv 810");
 						
 						//ChatMsg roomMsg = new ChatMsg(UserName, "810", lastTime + lastMsg);
@@ -1007,56 +1006,8 @@ public class ChatClientMain extends JFrame {
 //		chatListScrollPanel.repaint();
 //	}
 
-	public class CheckBoxFrame extends JFrame {
-		private static final long serialVersionUID = 1L;
-
-		private JLabel lbltxt;
-		private JButton makeRoom;
-
-		CheckBoxFrame() {
-			setBounds(clientView.getLocation().x + 350, clientView.getLocation().y, 240, 350);
-			setTitle("대화 상대 초대");
-
-			checkBoxContentPane = new JPanel(null);
-			checkBoxContentPane.setBackground(backColor);
-			setContentPane(checkBoxContentPane);
-
-			lbltxt = new JLabel("대화 상대 초대");
-			lbltxt.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-			lbltxt.setForeground(darkBlueColor);
-			lbltxt.setBounds(65, 5, 100, 25);
-			checkBoxContentPane.add(lbltxt);
-
-			checkBoxListPanel = new JPanel(null);
-			checkBoxListPanel.setBackground(Color.white);
-			checkBoxScrollPane = new JScrollPane(checkBoxListPanel);
-			checkBoxScrollPane.setBounds(10, 35, 205, 240);
-			checkBoxScrollPane.setBackground(Color.white);
-			checkBoxScrollPane.setVisible(true);
-			checkBoxContentPane.add(checkBoxScrollPane);
-
-			makeRoom = new JButton("만들기");
-			makeRoom.setFont(new Font("맑은 고딕", Font.BOLD, 13));
-			makeRoom.setBackground(Color.white);
-			makeRoom.setForeground(blueColor);
-			makeRoom.setBounds(76, 280, 75, 25);
-			makeRoom.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					String userList = UserName + " ";
-					for (int i = 0; i < checkBoxVec.size(); i++) {
-						JCheckBox cb = checkBoxVec.elementAt(i);
-						if (cb.isSelected()) { // 선택된 유저들만
-							userList = userList + cb.getText() + " ";
-						}
-					}
-					ChatMsg r = new ChatMsg(UserName, "800", userList); // 채팅방 만들기
-					SendObject(r);
-					setVisible(false);
-				}
-			});
-			checkBoxContentPane.add(makeRoom);
-
-		}
+	public void addOpenChatView(ChatClientRoom view) {
+		this.openChatViewVec.add(view);
 	}
 
 	// 프로필에 적용할 사진 resize

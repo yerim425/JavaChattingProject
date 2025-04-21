@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -28,7 +31,7 @@ import javax.swing.plaf.basic.BasicButtonUI;
 
 import data.ChatMsg;
 import data.ChatRoom;
-import main.ChatClientChat;
+import main.ChatClientRoom;
 import main.ChatClientMain;
 import main.view.ChatRoomListView;
 import main.view.UserListView;
@@ -46,7 +49,10 @@ public class ChatRoomItem extends JPanel {
 	private JLabel lastTime;
 	private JLabel lastMsg;
 	
-	private ChatClientChat chatClientView;
+	private boolean isOpen = false;
+	ChatClientRoom view;
+	
+	//private ChatClientChat chatClientView;
 	
 	public ChatRoomItem(ChatRoomListView parent, ChatRoom roomData) {
 		this.parent = parent;
@@ -69,9 +75,34 @@ public class ChatRoomItem extends JPanel {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				chatClientView = new ChatClientChat(parent, roomData);
-				chatClientView.setBounds(350, 300, 350, 550);
-				chatClientView.setVisible(true);
+				if(!isOpen) {
+					view = new ChatClientRoom(parent, roomData);
+					view.setBounds(350, 300, 350, 550);
+					view.setVisible(true);
+					parent.addOpenChatView(view);
+					isOpen = true;
+					
+					view.addWindowListener(new WindowListener() {
+
+			            @Override
+			            public void windowOpened(WindowEvent e) {}
+			            @Override
+			            public void windowIconified(WindowEvent e) {}
+			            @Override
+			            public void windowDeiconified(WindowEvent e) {}
+			            @Override
+			            public void windowDeactivated(WindowEvent e) {}
+			            @Override
+			            public void windowClosing(WindowEvent e) {
+			            	ChatRoomItem.this.isOpen = false;
+			            }
+			            @Override
+			            public void windowClosed(WindowEvent e) {}
+			            @Override
+			            public void windowActivated(WindowEvent e) {}
+			        });
+				}
+				
 			}
 
 			@Override
@@ -113,6 +144,8 @@ public class ChatRoomItem extends JPanel {
 		add(contentPane, BorderLayout.CENTER);
 		
 		setVisible(true);
+		
+		
 	}
 
 	public void setRoomData(ChatRoom roomData) {

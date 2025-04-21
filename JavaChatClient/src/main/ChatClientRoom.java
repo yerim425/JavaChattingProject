@@ -18,6 +18,7 @@ import java.net.Socket;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -28,6 +29,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -53,94 +55,84 @@ import javax.swing.text.StyledDocument;
 import data.ChatMsg;
 import data.ChatRoom;
 import main.view.ChatRoomListView;
-import main.view.item.ChatItem;
 import main.view.item.ChatRoomItem;
+import main.view.item.ChattingItem;
 
-
-
-public class ChatClientChat extends JFrame{
+public class ChatClientRoom extends JFrame {
 	/**
-	 *  ä�ù� frame
+	 * ä�ù� frame
 	 */
 	private static final long serialVersionUID = 1L;
-	private ChatClientMain mainView; 
+	private ChatClientMain mainView;
 	private JFrame myFrame = this;
-	
-	
-	
-	public int RoomId;
+
 	private static final int BUF_LEN = 128; // Windows ó�� BUF_LEN �� ����
-	
+
 	private JLabel lblRoomName;
-	
-	
+
 	private Frame frame;
 	private FileDialog fd;
-	
-	
-	
-	
+
 	private Color backColor = new Color(115, 175, 255);
-	
+
 	public String userList;
 	public String[] userNameArr;
 	public String RoomName;
-	
+
 	public String lastMsg;
 	public String lastTime;
-	private String oldTime; 
-	private String oldUser; 
+	private String oldTime;
+	private String oldUser;
 	private String newUser;
-	private JButton[] emoticonbtns = new JButton[12];
-	private ImageIcon[] emoticons = new ImageIcon[12];
-	private Vector<Emoticon> emoticonVec = new Vector<Emoticon>();
-	
-	
-	
+	// private JButton[] emoticonbtns = new JButton[12];
+	// private ImageIcon[] emoticons = new ImageIcon[12];
+	// private Vector<> emoticonVec = new Vector<>();
+
 //------------------------------------
 	private ChatRoomListView parent;
 	private ChatRoom roomData;
 	private String UserName;
-	
+
 	private JPanel contentPane;
 	private JButton btnBack; // 뒤로가기 버튼
 	private JButton btnPlus; // 이미지 보내기 버튼
 	private JButton btnSmile; // 이모티콘 보내기 버튼
 	private JButton btnSend; // 텍스트 보내기 버튼
-	
+
 	private JScrollPane scrollPane; // 채팅 스크롤 공간
 	private JPanel chatPanel; // 채팅 화면
-	
+
 	private EmoticonFrame emoticonView; // 이모티콘 선택 창
-	
-	//public JTextPane textArea; // 메시지 텍스트 
+
+	// public JTextPane textArea; // 메시지 텍스트
 	private JTextField txtInput; // 메시지 입력 칸
-	
-	
-	
-	public ChatClientChat(ChatRoomListView parent, ChatRoom roomData) {
+
+	// 채팅방 정보---------------------
+	private int RoomId; // 채팅방 고유번호
+
+	public ChatClientRoom(ChatRoomListView parent, ChatRoom roomData) {
 		this.parent = parent;
 		this.roomData = roomData;
 		this.UserName = roomData.getUserNameList()[0];
 		setResizable(false);
-		setLayout(new BorderLayout());
+		setBounds(0, 0, 350, 550);
 		setTitle(resources.Strings.BUGI_TALK);
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
+
 		contentPane = new JPanel(null);
 		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
-		contentPane.setBounds(0,0,350, 550);
+		contentPane.setBounds(0, 0, 350, 550);
 		contentPane.setBackground(resources.Colors.MAIN_BG2_COLOR);
 		contentPane.setOpaque(true);
 		setContentPane(contentPane);
-		
+
 		// 뒤로 가기 버튼
 		btnBack = new JButton();
 		btnBack.setBounds(10, 10, 25, 25);
 		btnBack.setIcon(imageResized(new ImageIcon("src/btnIcons/back.png"), 25));
-		btnBack.setBorder(new EmptyBorder(0,0,0,0));
+		btnBack.setBorder(new EmptyBorder(0, 0, 0, 0));
 		btnBack.setOpaque(false);
-		
+
 		btnBack.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -160,31 +152,29 @@ public class ChatClientChat extends JFrame{
 		lblRoomName.setPreferredSize(new Dimension(290, 25));
 		lblRoomName.setOpaque(false);
 		contentPane.add(lblRoomName);
-		
-		
+
 		// 채팅 화면
 		chatPanel = new JPanel();
 		chatPanel.setLayout(new BoxLayout(chatPanel, BoxLayout.Y_AXIS));
 		chatPanel.setPreferredSize(new Dimension(330, calculatePanelHeight()));
 		chatPanel.setAlignmentY(TOP_ALIGNMENT);
 		chatPanel.setOpaque(false);
-		
+
 		// 채팅 스크롤 공간
 		scrollPane = new JScrollPane(chatPanel);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.getViewport().setOpaque(false);
-		scrollPane.setOpaque(true);
+		scrollPane.setOpaque(false);
 		scrollPane.setBorder(null);
 		scrollPane.setBounds(10, 45, 330, 430);
-		scrollPane.setBackground(resources.Colors.MAIN_BLUE_COLOR);
 		contentPane.add(scrollPane);
-		
+
 		// 이모티콘 선택 버튼
 		btnSmile = new JButton();
 		btnSmile.setBounds(10, 485, 25, 25);
 		btnSmile.setIcon(imageResized(new ImageIcon("src/btnIcons/smile.png"), 25));
-		btnBack.setBorder(new EmptyBorder(0,0,0,0));
+		btnBack.setBorder(new EmptyBorder(0, 0, 0, 0));
 		btnBack.setOpaque(false);
 		btnSmile.addActionListener(new ActionListener() {
 
@@ -194,37 +184,33 @@ public class ChatClientChat extends JFrame{
 				emoticonView = new EmoticonFrame();
 				emoticonView.setVisible(true);
 			}
-			
+
 		});
 		contentPane.add(btnSmile);
-		
+
 		// 이미지 선택 버튼
 		btnPlus = new JButton();
 		btnPlus.setBounds(40, 485, 25, 25);
 		btnPlus.setIcon(imageResized(new ImageIcon("src/btnIcons/plus.png"), 25));
-		btnPlus.setBorder(new EmptyBorder(0,0,0,0));
+		btnPlus.setBorder(new EmptyBorder(0, 0, 0, 0));
 		btnPlus.setOpaque(false);
 		btnPlus.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				//frame = new Frame("이미지 선택"); 
+				// frame = new Frame("이미지 선택");
 				// 이미지 선택 다이얼로그 띄우기
-				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD); 
+				fd = new FileDialog(frame, "이미지 선택", FileDialog.LOAD);
 				fd.setVisible(true);
-				
-				
-				
-				
+
 				ImageIcon selectIcon = new ImageIcon(fd.getDirectory() + fd.getFile());
-				
-				
+
 				ChatMsg cm = new ChatMsg(UserName, "300", "image");
 				ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
 				cr.setChatImg(selectIcon);
 				cm.setRoomData(cr);
-				//cm.setTime(calcTime()); // 이건 서버에서 계산해서 저장
-				
+				// cm.setTime(calcTime()); // 이건 서버에서 계산해서 저장
+
 				// 이미지 사이즈 조정 -- 나중에 실행해보고 안되면 수정
 //				Image selectImg = selectIcon.getImage();
 //				int width, height;
@@ -245,7 +231,7 @@ public class ChatClientChat extends JFrame{
 //					cm.setChatImg(new ImageIcon(selectImg));
 //				} else
 //					cm.setChatImg(selectIcon);
-				
+
 				parent.SendObject(cm);
 			}
 		});
@@ -257,28 +243,46 @@ public class ChatClientChat extends JFrame{
 		txtInput.setFont(resources.Fonts.MAIN_BOLD_15);
 		txtInput.setOpaque(true);
 		txtInput.setBackground(resources.Colors.MAIN_WHITE_COLOR);
+		txtInput.addActionListener(new TextSendAction());
 		contentPane.add(txtInput);
-		
+
 		// 보내기 버튼
 		btnSend = new JButton();
 		btnSend.setBounds(315, 485, 22, 22);
 		btnSend.setIcon(imageResized(new ImageIcon("src/btnIcons/send.png"), 22));
-		btnSend.setBorder(new EmptyBorder(0,0,0,0));
+		btnSend.setBorder(new EmptyBorder(0, 0, 0, 0));
 		btnSend.setOpaque(false);
 		btnSend.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				ChatMsg cm = new ChatMsg(UserName, "200", "message");
-				ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
-				cr.setLastMsg(txtInput.getText().trim());
-				cm.setRoomData(cr);
-				parent.SendObject(cm);
-				
-				txtInput.setText("");
+				String msg = txtInput.getText().trim();
+				if (!(msg.equals(""))) {
+					ChatMsg cm = new ChatMsg(UserName, "200", msg);
+					ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
+					cr.setLastMsg(msg);
+					cm.setRoomData(cr);
+					parent.SendObject(cm);
+
+					txtInput.setText("");
+					txtInput.requestFocus();
+				}
+
 			}
 		});
 		contentPane.add(btnSend);
-	
+
+		this.revalidate();
+		this.repaint();
+
+		// txtInput.requestFocus();
+	}
+
+	public int getRoomId() {
+		return this.RoomId;
+	}
+
+	public String getUserName() {
+		return this.UserName;
 	}
 
 
@@ -286,6 +290,7 @@ public class ChatClientChat extends JFrame{
 	
 	/**
 	 * Create the frame.
+	 * @return 
 	 */
 //	public ChatClientChat(ChatClientMain parent, String username, int room_id, String userlist) {
 //		
@@ -374,7 +379,7 @@ public class ChatClientChat extends JFrame{
 //		}
 //
 //	
-//		addWindowListener(new WindowListener() {
+//		this.addWindowListener(new WindowListener() {
 //
 //            @Override
 //            public void windowOpened(WindowEvent e) {
@@ -394,7 +399,7 @@ public class ChatClientChat extends JFrame{
 //
 //            @Override
 //            public void windowClosing(WindowEvent e) {
-//				setVisible(false);
+//				
 //            }
 //
 //            @Override
@@ -405,6 +410,45 @@ public class ChatClientChat extends JFrame{
 //            public void windowActivated(WindowEvent e) {
 //            }
 //        });
+		
+		// keyboard enter key 
+				class TextSendAction implements ActionListener {
+					
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.out.println("here");
+						if (e.getSource() == btnSend || e.getSource() == txtInput) {
+							String msg = null;
+							msg = txtInput.getText().trim();
+							System.out.println(msg);
+							
+//							for(int i=0;i<emoticonVec.size();i++) {
+//								Emoticon emo = emoticonVec.elementAt(i);
+//								if(emo.name.equals(msg)) { // (����)
+//									ChatMsg cm = new ChatMsg(UserName, "400", msg);
+//									cm.setEmoticon(emo.emoticon);
+//									cm.setRoomId(RoomId);
+//									cm.setTime(calcTime());
+//									mainView.SendObject(cm);
+//									
+//									txtInput.setText("");
+//									txtInput.requestFocus();
+//									return;
+//								}
+//							}
+							ChatMsg obcm = new ChatMsg(UserName, "200", msg);
+							roomData.setLastTime(calcTime());
+							obcm.setRoomData(roomData);
+							parent.SendObject(obcm);
+							
+							txtInput.setText(""); 
+							txtInput.requestFocus(); 
+						
+						}
+					}
+				}
+
+
 //		
 //			
 //		try {
@@ -423,43 +467,8 @@ public class ChatClientChat extends JFrame{
 //			//AppendText("connect error", "");
 //		}	
 //	}
+//
 
-		// keyboard enter key ġ�� ������ ����
-//		class TextSendAction implements ActionListener {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				// Send button�� �����ų� �޽��� �Է��ϰ� Enter key ġ��
-//				if (e.getSource() == btnSend || e.getSource() == txtInput) {
-//					String msg = null;
-//					msg = txtInput.getText();
-//					msg.trim();
-//					
-//					System.out.println(msg);
-//					for(int i=0;i<emoticonVec.size();i++) {
-//						Emoticon emo = emoticonVec.elementAt(i);
-//						if(emo.name.equals(msg)) { // (����)
-//							ChatMsg cm = new ChatMsg(UserName, "400", msg);
-//							cm.setEmoticon(emo.emoticon);
-//							cm.setRoomId(RoomId);
-//							cm.setTime(calcTime());
-//							mainView.SendObject(cm);
-//							
-//							txtInput.setText("");
-//							txtInput.requestFocus();
-//							return;
-//						}
-//					}
-//					ChatMsg obcm = new ChatMsg(UserName, "200", msg);
-//					obcm.setRoomId(RoomId);
-//					obcm.setTime(calcTime());
-//					mainView.SendObject(obcm);
-//					
-//					txtInput.setText(""); // �޼����� ������ ���� �޼��� ����â�� ����.
-//					txtInput.requestFocus(); // �޼����� ������ Ŀ���� �ٽ� �ؽ�Ʈ �ʵ�� ��ġ��Ų��
-//				
-//				}
-//			}
-//		}
 //
 //		class ImageSendAction implements ActionListener {
 //			@Override
@@ -502,8 +511,6 @@ public class ChatClientChat extends JFrame{
 //			}
 //		}
 
-
-		
 //		public void AppendIcon_text(ImageIcon icon_resized) {
 //			int len = textArea.getDocument().getLength();
 //			textArea.setCaretPosition(len);
@@ -617,36 +624,40 @@ public class ChatClientChat extends JFrame{
 //			}
 //		}
 //
-//		// ȭ�� ������ ���
-//		public void AppendTextR_name(String msg) {
-//			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
-//			int len = textArea.getDocument().getLength();
-//			textArea.setCaretPosition(len); 
-//			
-//			StyledDocument doc = textArea.getStyledDocument();
-//			SimpleAttributeSet right = new SimpleAttributeSet();
-//			StyleConstants.setAlignment(right, StyleConstants.ALIGN_RIGHT);
-//			StyleConstants.setForeground(right, Color.BLACK); 
-//			StyleConstants.setFontSize(right, 14);
-//		    doc.setParagraphAttributes(doc.getLength(), 1, right, false);
-//		    SimpleAttributeSet time = new SimpleAttributeSet();
-//		    StyleConstants.setFontSize(time, 11);
-//			try {
-//				String[] data = msg.split("/");
-//				newUser = data[0];
-//				if(!data[1].equals(oldTime) || !newUser.equals(oldUser)) {//�ð��� �ٲ���ų�, �޽����� ���� ������ �ٸ���
-//					doc.insertString(doc.getLength(), (oldTime = data[1]), time );
-//					doc.insertString(doc.getLength(), "  "+newUser+ " \n", right );
-//					oldUser = newUser;
-//				}
-//				else {
-//					doc.insertString(doc.getLength(), newUser+ " \n", right );
-//				}
-//			} catch (BadLocationException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
+	// ȭ�� ������ ���
+	public void AppendMessage(ChatMsg chatMsg) {
+		int MSG_TEXT = 0;
+		int MSG_IMAGE = 1;
+		int MSG_IMOTICON = 2;
+		ChattingItem view = null;
+		if (chatMsg.getId().equals(UserName)) { // 내가 보낸 채팅
+			if (chatMsg.getCode().equals("300")) { // image message
+				view = new ChattingItem(chatMsg, true, MSG_IMOTICON);
+			} else if (chatMsg.getCode().equals("400")) { // imoticon message
+				view = new ChattingItem(chatMsg, true, MSG_IMAGE);
+			} else { // text message
+				view = new ChattingItem(chatMsg, true, MSG_TEXT);
+			}
+		} else { // 친구가 보낸 채팅
+			if (chatMsg.getCode().equals("300")) { // image message
+				view = new ChattingItem(chatMsg, false, MSG_IMOTICON);
+			} else if (chatMsg.getData().equals("400")) { // imoticon message
+				view = new ChattingItem(chatMsg, false, MSG_IMAGE);
+			} else { // text message
+				view = new ChattingItem(chatMsg, false, MSG_TEXT);
+			}
+
+		}
+		if (view != null) {
+			chatPanel.add(view);
+			chatPanel.add(Box.createVerticalStrut(10));
+			chatPanel.setPreferredSize(new Dimension(200, calculatePanelHeight()));
+			chatPanel.validate();
+			chatPanel.repaint();
+
+		}
+
+	}
 //		public void AppendTextR_msg(String msg) {
 //			msg = msg.trim(); // �յ� blank�� \n�� �����Ѵ�.	
 //			
@@ -699,171 +710,240 @@ public class ChatClientChat extends JFrame{
 //			
 //		}
 
-		
-		// Windows ó�� message ������ ������ �κ��� NULL �� ����� ���� �Լ�
-		public byte[] MakePacket(String msg) {
-			byte[] packet = new byte[BUF_LEN];
-			byte[] bb = null;
-			int i;
-			for (i = 0; i < BUF_LEN; i++)
-				packet[i] = 0;
-			try {
-				bb = msg.getBytes("euc-kr");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				System.exit(0);
-			}
-			for (i = 0; i < bb.length; i++)
-				packet[i] = bb[i];
-			return packet;
+	// Windows ó�� message ������ ������ �κ��� NULL �� ����� ���� �Լ�
+	public byte[] MakePacket(String msg) {
+		byte[] packet = new byte[BUF_LEN];
+		byte[] bb = null;
+		int i;
+		for (i = 0; i < BUF_LEN; i++)
+			packet[i] = 0;
+		try {
+			bb = msg.getBytes("euc-kr");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(0);
 		}
+		for (i = 0; i < bb.length; i++)
+			packet[i] = bb[i];
+		return packet;
+	}
 
-		public class EmoticonFrame extends JFrame{
-			private static final long serialVersionUID = 1L;
-			
-			private JLabel lbltxt;
-			private JButton makeRoom;
-			
-			EmoticonFrame(){
-				setBounds(myFrame.getLocation().x+350, myFrame.getLocation().y+35, 340, 465);
-				setTitle("�̸�Ƽ�� ������");
-				
-				JPanel contentPane = new JPanel();
-				contentPane.setBackground(backColor);
-				setContentPane(contentPane);
-				
-				JPanel emoticonPanel = new JPanel(new GridLayout(4, 3, 5, 5));
-				emoticonPanel.setBackground(backColor);
-				JScrollPane emoticonScrollPane = new JScrollPane(emoticonPanel);
-				contentPane.add(emoticonScrollPane);
+	private class ImgFrame extends JFrame {
+		private static final long serialVersionUID = 1L;
 
-				for(int j=0;j<12;j++) {
-					emoticonPanel.add(emoticonbtns[j]);
-					//emoticonPanel.add(emoticonlbls[j]);
+		ImgFrame(ImageIcon img) {
+
+			JPanel contentPane = new JPanel(null);
+			contentPane.setBackground(Color.WHITE);
+			setContentPane(contentPane);
+
+			Image ori_img = img.getImage();
+			int width, height;
+			double ratio;
+			width = img.getIconWidth();
+			height = img.getIconHeight();
+			// Image�� �ʹ� ũ�� �ִ� ���� �Ǵ� ���� 300 �������� ��ҽ�Ų��.
+			if (width > 300 || height > 300) {
+				if (width > height) { // ���� ����
+					ratio = (double) height / width;
+					width = 300;
+					height = (int) (width * ratio);
+				} else { // ���� ����
+					ratio = (double) width / height;
+					height = 300;
+					width = (int) (height * ratio);
 				}
-					
+				Image new_img = ori_img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+				ImageIcon new_icon = new ImageIcon(new_img);
+				img = new_icon;
+			}
+
+			JLabel lblImg = new JLabel();
+			lblImg.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
+			lblImg.setIcon(img);
+			contentPane.add(lblImg);
+
+			setVisible(true);
+		}
+	}
+
+	// ���� �ð� ����Ͽ� ���
+	private String calcTime() {
+		String t;
+		LocalTime nowTime = LocalTime.now();
+		int hour = nowTime.getHour();
+		int minute = nowTime.getMinute();
+		String m;
+		if (minute < 10) {
+			m = "0" + minute;
+		} else {
+			m = "" + minute;
+		}
+		if (hour < 12) {
+			t = "���� " + hour + ":" + m;
+		} else if (hour == 12) {
+			t = "���� 12:" + m;
+		} else {
+			t = "���� " + (hour - 12) + ":" + m;
+		}
+		return t;
+	}
+
+	// ���� ��¥ ����Ͽ� ���
+	private String calcDate() {
+
+		LocalDate nowData = LocalDate.now();
+		int year = nowData.getYear();
+		int month = nowData.getMonthValue();
+		int dayOfMonth = nowData.getDayOfMonth();
+		int dayOfWeek = nowData.getDayOfWeek().getValue();
+		String dayOfWeek_str = "";
+		switch (dayOfWeek) {
+		case 1:
+			dayOfWeek_str = "������";
+			break;
+		case 2:
+			dayOfWeek_str = "ȭ����";
+			break;
+		case 3:
+			dayOfWeek_str = "������";
+			break;
+		case 4:
+			dayOfWeek_str = "�����";
+			break;
+		case 5:
+			dayOfWeek_str = "�ݿ���";
+			break;
+		case 6:
+			dayOfWeek_str = "�����";
+			break;
+		case 7:
+			dayOfWeek_str = "�Ͽ���";
+			break;
+		}
+		return (year + "�� " + month + "�� " + dayOfMonth + "�� " + dayOfWeek_str);
+	}
+
+	// -----------
+
+	public ImageIcon imageResized(ImageIcon ori_icon, int size) {
+		Image img = ori_icon.getImage();
+		int width = ori_icon.getIconWidth();
+		int height = ori_icon.getIconHeight();
+
+		return new ImageIcon(img.getScaledInstance(size, size, Image.SCALE_SMOOTH));
+
+	}
+
+	public int calculatePanelHeight() {
+		int itemCount = 0;
+
+		for (int i = 0; i < chatPanel.getComponentCount(); i++) {
+			if (chatPanel.getComponent(i) instanceof ChattingItem) {
+				itemCount++;
 			}
 		}
-		
-		public class Emoticon{
-			public ImageIcon emoticon;
-			public String name;
-			
-			Emoticon(ImageIcon icon, String name){
-				emoticon = icon;
-				this.name = name;
-			}
-			
-		}
-		
-		private class ImgFrame extends JFrame{
-			private static final long serialVersionUID = 1L;
-			
-			ImgFrame(ImageIcon img){
-				
-				JPanel contentPane = new JPanel(null);
-				contentPane.setBackground(Color.WHITE);
-				setContentPane(contentPane);
-				
-				Image ori_img = img.getImage();
-				int width, height;
-				double ratio;
-				width = img.getIconWidth();
-				height = img.getIconHeight();
-				// Image�� �ʹ� ũ�� �ִ� ���� �Ǵ� ���� 300 �������� ��ҽ�Ų��.
-				if (width > 300 || height > 300) {
-					if (width > height) { // ���� ����
-						ratio = (double) height / width;
-						width = 300;
-						height = (int) (width * ratio);
-					} else { // ���� ����
-						ratio = (double) width / height;
-						height = 300;
-						width = (int) (height * ratio);
+		int itemHeight = 100;
+		int spacing = 10;
+		return itemCount * (itemHeight + spacing);
+	}
+
+	/// 이모티콘 프레임 ----------------------------------------
+	class EmoticonFrame extends JFrame {
+		private static final long serialVersionUID = 1L;
+
+		private JLabel lbltxt;
+		private JButton makeRoom;
+		private ArrayList<Emoticon> emoticonList = new ArrayList<Emoticon>();
+
+		private String[] emoticonNames = { "angry", "crying", "disgusted", "good", "happy", "love", "merong", "smile",
+				"thinking" };
+
+		public EmoticonFrame() {
+			setBounds(parent.getLocation().x + 350, parent.getLocation().y + 35, 340, 465);
+			setTitle("이모티콘 보내기");
+
+			JPanel contentPane = new JPanel();
+			contentPane.setBackground(resources.Colors.MAIN_BG_COLOR);
+			contentPane.setOpaque(true);
+			setContentPane(contentPane);
+
+			JPanel emoticonPanel = new JPanel(new GridLayout(4, 3, 5, 5));
+			emoticonPanel.setOpaque(false);
+			JScrollPane emoticonScrollPane = new JScrollPane(emoticonPanel);
+			emoticonScrollPane.setBackground(resources.Colors.MAIN_BG_COLOR);
+			emoticonScrollPane.setOpaque(true);
+			contentPane.add(emoticonScrollPane);
+
+			// 이모티콘 이미지 가져오기
+			for (int i = 0; i < 9; i++) {
+				JPanel emoticon = new Emoticon(new ImageIcon("src/emoticons/icon_" + emoticonNames[i] + ".png"),
+						emoticonNames[i]);
+
+				emoticon.addMouseListener(new MouseListener() {
+
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						String emoticonName = ((JPanel) e.getSource()).getName();
+						// ImageIcon icon = (ImageIcon)((JButton)e.getSource()).getIcon();
+						// TODO Auto-generated method stub
+
+						ChatMsg cm = new ChatMsg(UserName, "400", emoticonName);
+						roomData.setLastTime(calcTime());
+						cm.setRoomData(roomData);
+						parent.SendObject(cm);
+						EmoticonFrame.this.setVisible(false);
+//							ChatMsg emo = new ChatMsg(UserName, "400", emoticonVec.elementAt(j).name);
+//							emo.setEmoticon(icon);
+//							emo.setRoomId(RoomId);
+//							emo.setTime(calcTime());
+//							mainView.SendObject(emo);
+//							emoView.setVisible(false);
 					}
-					Image new_img = ori_img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-					ImageIcon new_icon = new ImageIcon(new_img);
-					img =  new_icon;
-				} 
 
-				JLabel lblImg = new JLabel();
-				lblImg.setBounds(0, 0, img.getIconWidth(), img.getIconHeight());
-				lblImg.setIcon(img);
-				contentPane.add(lblImg);
-				
-				setVisible(true);
-			}
-		}
-		// ���� �ð� ����Ͽ� ���
-		private String calcTime() {
-			String t;
-			LocalTime nowTime = LocalTime.now();
-			int hour = nowTime.getHour(); 
-			int minute = nowTime.getMinute();
-			String m;
-			if(minute<10) {
-				m = "0" + minute;
-			}else {
-				m = ""+ minute;
-			}
-			if(hour < 12) {
-				t = "���� " + hour+ ":" + m;
-			}else if(hour == 12){
-				t = "���� 12:" + m;
-			}
-			else {
-				t = "���� " + (hour-12) + ":" + m;
-			}
-			return t;
-		}
-		// ���� ��¥ ����Ͽ� ���
-		private String calcDate() {
-			
-			LocalDate nowData = LocalDate.now();
-			int year = nowData.getYear();
-			int month = nowData.getMonthValue();
-			int dayOfMonth = nowData.getDayOfMonth();
-			int dayOfWeek = nowData.getDayOfWeek().getValue();
-			String dayOfWeek_str = "";
-			switch(dayOfWeek) {
-			case 1: dayOfWeek_str = "������"; break;
-			case 2: dayOfWeek_str = "ȭ����"; break;
-			case 3: dayOfWeek_str = "������"; break;
-			case 4: dayOfWeek_str = "�����"; break;
-			case 5: dayOfWeek_str = "�ݿ���"; break;
-			case 6: dayOfWeek_str = "�����"; break;
-			case 7: dayOfWeek_str = "�Ͽ���"; break;
-			}
-			return (year+"�� "+month+"�� "+dayOfMonth+"�� "+dayOfWeek_str);
-		}	
-		
-		//-----------
-		
-		
-		public ImageIcon imageResized(ImageIcon ori_icon, int size) {
-			Image img = ori_icon.getImage();
-			int width = ori_icon.getIconWidth();
-			int height = ori_icon.getIconHeight();
+					@Override
+					public void mousePressed(MouseEvent e) {
+					}
 
-			return new ImageIcon(img.getScaledInstance(size, size, Image.SCALE_SMOOTH));
+					@Override
+					public void mouseReleased(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseEntered(MouseEvent e) {
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+					}
+
+				});
+				emoticonList.add((Emoticon) emoticon);
+				emoticonPanel.add((Emoticon) emoticon);
+
+			}
+
+			emoticonPanel.revalidate();
+			emoticonPanel.repaint();
+			setVisible(true);
+		}
+
+		public class Emoticon extends JPanel {
+			private static final long serialVersionUID = 1L;
+			private ImageIcon emoticon;
+			private String name;
+			private JLabel label;
+
+			Emoticon(ImageIcon icon, String name) {
+				this.setPreferredSize(new Dimension(100, 100));
+
+				this.emoticon = new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+				this.name = name;
+				label = new JLabel(emoticon);
+				add(label);
+			}
 
 		}
-		
-		public int calculatePanelHeight() {
-			int itemCount = 0;
-			
-		    for (int i = 0; i < chatPanel.getComponentCount(); i++) {
-		        if (chatPanel.getComponent(i) instanceof ChatItem) {
-		            itemCount++;
-		        }
-		    }
-		    int itemHeight = 60; 
-		    int spacing = 10;
-		    return itemCount * (itemHeight + spacing);
-		}
+	}
 }
-
-
-
-

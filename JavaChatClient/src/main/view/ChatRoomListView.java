@@ -24,9 +24,8 @@ import javax.swing.border.EmptyBorder;
 
 import data.ChatMsg;
 import data.ChatRoom;
-import main.ChatClientChat;
+import main.ChatClientRoom;
 import main.ChatClientMain;
-import main.ChatClientMain.CheckBoxFrame;
 import main.view.item.ChatRoomItem;
 
 // Main 뷰에서 "채팅" 바텀 버튼을 누른 경우 띄워지는 view
@@ -128,7 +127,6 @@ public class ChatRoomListView extends BaseView{
 		add(chatRoomListScrollPane);
 		
 		
-		
 	}
 
 	public void initChatRoomList() { // 목록 재세팅을 위해 전부 삭제
@@ -154,6 +152,7 @@ public class ChatRoomListView extends BaseView{
 		
 		chatRoomListPanel.revalidate();
 		chatRoomListPanel.repaint();
+		
 		
 	}
 	
@@ -189,6 +188,10 @@ public class ChatRoomListView extends BaseView{
 	    int itemHeight = 60; 
 	    int spacing = 10;
 	    return itemCount * (itemHeight + spacing);
+	}
+	
+	public void addOpenChatView(ChatClientRoom view) {
+		parent.addOpenChatView(view);
 	}
 	
 

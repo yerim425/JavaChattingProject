@@ -140,7 +140,7 @@ public class CreateRoomFrame extends JFrame {
 				}
 				//System.out.println(userList);
 				ChatMsg r = new ChatMsg(userName, "810", userList.trim()); // 채팅방 만들기
-				parent.SendObject(r); // 800 -> 810
+				parent.SendObject(r); // 
 				setVisible(false);
 			}
 		});
