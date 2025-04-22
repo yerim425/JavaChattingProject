@@ -30,17 +30,6 @@ public class ChatRoom implements Serializable{
 		userNameList = nameList.split(" ");
 		userName = userNameList[0];
 		
-		// 채팅방 이름 설정
-		if(userNameList.length == 1) { // 나만 있는 채팅방
-			roomName = userNameList[0];
-		}else if(userNameList.length == 2){
-			roomName = userNameList[1];
-		}else {
-			for(int i=1;i<userNameList.length;i++) {
-				roomName += userNameList[i] + ", ";
-			}
-			roomName = roomName.substring(0, roomName.length()-1);
-		}
 		
 	}
 	

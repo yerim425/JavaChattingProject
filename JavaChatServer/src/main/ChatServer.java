@@ -48,9 +48,11 @@ public class ChatServer extends JFrame {
 	private Vector<UserService> UserVec = new Vector<UserService>(); // 연결된 사용자를 저장할 벡터
 	// private Vector<UserService> SleepUserVec = new Vector<UserService>(); //
 	// logout 상태인 사용자를 저장할 벡터
-	private Vector<ChatRoom> ChatRoomVec = new Vector<ChatRoom>(); // 채팅방을 저장할 벡터
+	
+	//private Vector<ChatRoom> ChatRoomVec = new Vector<ChatRoom>(); // 서버에 저장된 모든 채팅방 벡터
+	
 	private static final int BUF_LEN = 128; // Windows 처럼 BUF_LEN 을 정의
-	private int roomId = 1000;
+	private int roomId = 0;
 
 	/**
 	 * Launch the application.
@@ -193,8 +195,10 @@ public class ChatServer extends JFrame {
 		private Vector<String> friendNameVec = new Vector<String>(); // 해당 유저의 친구 리스트
 		private Vector<String> friendWaitVec = new Vector<String>(); // 나 -> 유저 (친구요청) 답변 기다리기 위한 이름 리스트
 		private Vector<String> friendRecvVec = new Vector<String>(); // 유저 -> 나 (친구요청) 받은 상대방 이름 리스트
-		private Vector<ChatRoom> userRoomVec = new Vector<ChatRoom>(); // 내가 활동중인 채팅방 벡터
-
+		//private Vector<ChatRoom> userRoomVec = new Vector<ChatRoom>(); // 내가 활동중인 채팅방 벡터
+		private Vector<ChatRoom> chatRoomVec = new Vector<ChatRoom>(); // 나의 채팅방들을 저장할 벡터
+		
+		
 		public UserService(Socket client_socket) {
 			// TODO Auto-generated constructor stub
 			// 매개변수로 넘어온 자료 저장
@@ -205,6 +209,7 @@ public class ChatServer extends JFrame {
 				oos = new ObjectOutputStream(client_socket.getOutputStream());
 				oos.flush();
 				ois = new ObjectInputStream(client_socket.getInputStream());
+				
 
 			} catch (Exception e) {
 				AppendText("userService error");
@@ -427,7 +432,12 @@ public class ChatServer extends JFrame {
 								this.friendNameVec = user.friendNameVec; // 친구 이름 리스트 가져오기
 								this.friendRecvVec = user.friendRecvVec; // 친구요청 승낙 기다림 리스트 가져오기
 								this.friendWaitVec = user.friendWaitVec; // 친구요청 추가 전 리스트 가져오기
-								// this.userRoomVec = user.userRoomVec;
+								this.chatRoomVec = user.chatRoomVec; // 채팅방 정보 벡터
+								for(ChatRoom cr : chatRoomVec) {
+									System.out.println(cr.getRoomName());
+								}
+								
+								
 								UserVec.remove(user);
 								user_vc = UserVec;
 							}
@@ -448,17 +458,40 @@ public class ChatServer extends JFrame {
 						Login();
 
 					} 
-//					else if (cm.getCode().equals("200")) { // message
-//						msg = String.format("[%s] %s", cm.getId(), cm.getData());
-//						AppendText(msg); // server 화면에 출력
-//						String[] args = msg.split(" "); // 단어들을 분리한다.
-//
-//						if (args.length == 1) { // Enter key 만 들어온 경우 Wake up 처리만 한다.
-//							UserStatus = "O";
-//
-//						} else { // 일반 채팅 메시지
-//							UserStatus = "O";
-//
+					else if (cm.getCode().equals("200")) { // text message
+						msg = String.format("[%s] %s", cm.getId(), cm.getData());
+						AppendText(msg); // server 화면에 출력
+						String[] args = msg.split(" "); // 단어들을 분리한다.
+
+						if (args.length == 1) { // Enter key 만 들어온 경우 Wake up 처리만 한다.
+							UserStatus = "O";
+
+						} else { // 일반 채팅 메시지
+							UserStatus = "O";
+							
+							
+							for(int i=0;i<chatRoomVec.size(); i++) { // 내 채팅방들 중
+								ChatRoom getRoom = cm.getRoomData(); 
+								getRoom.setLastTime(calcTime());
+								getRoom.setLastMsg(cm.getData());
+								if(chatRoomVec.elementAt(i).getRoomId() == getRoom.getRoomId()) { // 채팅 보낸 채팅방을 찾아
+									for(UserService user : user_vc) {
+										for(String name : getRoom.getUserNameList()) {
+											if(name.equals(user.UserName)) { // 친구들에게
+												cm.setProfileImg_ori(UserProfileImg);
+												cm.setRoomData(getRoom);
+											
+												user.chatRoomVec.elementAt(i).addChatMsg(cm);
+												//user.chatRoomVec.set(i, user.chatRoomVec.get(i));
+												if(user.UserStatus.equals("O")){
+													user.WriteOneObject(cm); // 채팅 전송
+												}
+											}
+										}
+									}
+								}
+							}
+
 //							for (int i = 0; i < ChatRoomVec.size(); i++) {
 //								ChatRoom r = ChatRoomVec.elementAt(i);
 //								if (r.getRoomId() == cm.getRoomId()) {
@@ -484,8 +517,33 @@ public class ChatServer extends JFrame {
 //									r.setLastMsg(cm.getData());
 //								}
 //							}
-//						}
-//					} else if (cm.getCode().equals("300")) { // image 보내기
+						}
+					} 
+						else if (cm.getCode().equals("300")) { // image 보내기
+							
+							for(int i=0;i<chatRoomVec.size(); i++) { // 내 채팅방들 중
+								ChatRoom getRoom = cm.getRoomData(); 
+								getRoom.setLastTime(calcTime());
+								getRoom.setLastMsg("(사진)");
+								if(chatRoomVec.elementAt(i).getRoomId() == getRoom.getRoomId()) { // 채팅 보낸 채팅방을 찾아
+									for(UserService user : user_vc) {
+										for(String name : getRoom.getUserNameList()) {
+											if(name.equals(user.UserName)) { // 친구들에게
+												cm.setProfileImg_ori(UserProfileImg);
+												cm.setRoomData(getRoom);
+												
+												user.chatRoomVec.elementAt(i).addChatMsg(cm);
+												//user.chatRoomVec.set(i, user.chatRoomVec.get(i));
+												if(user.UserStatus.equals("O")){
+													user.WriteOneObject(cm); // 채팅 전송
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+							
 //						for (int i = 0; i < ChatRoomVec.size(); i++) {
 //							ChatRoom r = ChatRoomVec.elementAt(i);
 //							if (r.getRoomId() == cm.getRoomId()) {
@@ -512,7 +570,8 @@ public class ChatServer extends JFrame {
 //							}
 //						}
 //
-//					} else if (cm.getCode().equals("400")) { // 이모티콘 보내기
+//					} 
+//						else if (cm.getCode().equals("400")) { // 이모티콘 보내기
 //						for (int i = 0; i < ChatRoomVec.size(); i++) {
 //							ChatRoom r = ChatRoomVec.elementAt(i);
 //							if (r.getRoomId() == cm.getRoomId()) {
@@ -699,37 +758,56 @@ public class ChatServer extends JFrame {
 					} else if (cm.getCode().equals("800")) { // 채팅방 새로고침(전체)
 						
 						
-						Vector<ChatRoom> vec = new Vector<ChatRoom>();
-						for(ChatRoom room : ChatRoomVec) {
-							for(String name : room.getUserNameList()) {
-								if(name.equals(UserName)) {
-									vec.addElement(room);
-								}
-							}
-							
-						}
+//						Vector<ChatRoom> vec = new Vector<ChatRoom>();
+//						for(ChatRoom room : ChatRoomVec) {
+//							for(String name : room.getUserNameList()) {
+//								if(name.equals(UserName)) {
+//									vec.addElement(room);
+//								}
+//							}
+//							
+//						}
 						
 						ChatMsg cm2 = new ChatMsg(UserName, "800", cm.getData()); // "refresh, all"
-						cm2.setRoomVec(vec);
+						cm2.setRoomVec(this.chatRoomVec);
 						WriteOneObject(cm2);
 						
 					}
 
 					else if (cm.getCode().equals("810")) { // 채팅방 만들기
 						
-						
 						ChatRoom cr = new ChatRoom(roomId++, cm.getData()); // Data : user names String
-						ChatRoomVec.add(cr);
+						//ChatRoomVec.add(cr);
 						
 						// 채팅방 리스트에 새로 추가한 채팅방 아이템 추가
 						for(String name : cr.getUserNameList()) { // getData : user names String
 							for(UserService user : user_vc) {
 								 // 채팅방 멤버들에게 전송
-								if(name.equals(user.UserName) && user.UserStatus.equals("O")) {
-									ChatMsg mr = new ChatMsg(user.UserName, "810", "add room");
-									mr.setRoomData(cr);
-									user.WriteOneObject(mr);
+								if(name.equals(user.UserName)){
+									
+									// 채팅방 이름 설정
+									String roomName = "";
+									for(String friendName : cr.getUserNameList()) {
+										if(!(user.UserName.equals(friendName))) {
+											roomName += friendName + ", ";
+										}
+									}
+									if(roomName.equals("")) { // 나만 있는 채팅방
+										roomName = user.UserName;
+										System.out.println("roomName is empty");
+									}else {
+										roomName = roomName.substring(0, roomName.length()-2);
+									}
+									cr.setRoomName(roomName);	
+									user.chatRoomVec.add(cr);
+									
+									if(user.UserStatus.equals("O")) {
+										ChatMsg mr = new ChatMsg(user.UserName, "810", "add room");
+										mr.setRoomData(cr);
+										user.WriteOneObject(mr);
+									}
 								}
+								
 							}
 						}
 						

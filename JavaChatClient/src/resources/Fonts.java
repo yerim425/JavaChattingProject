@@ -18,6 +18,8 @@ public class Fonts {
 	public static final Font MAIN_BOLD_14 = new Font("나눔고딕", Font.BOLD, 14);
 
 	public static final Font MAIN_PLAIN_12 = new Font("나눔고딕", Font.PLAIN, 12);
+
+	public static final Font MAIN_PLAIN_10 = new Font("나눔고딕", Font.PLAIN, 10);
 	
 
 }

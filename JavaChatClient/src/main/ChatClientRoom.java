@@ -113,7 +113,7 @@ public class ChatClientRoom extends JFrame {
 	public ChatClientRoom(ChatRoomListView parent, ChatRoom roomData) {
 		this.parent = parent;
 		this.roomData = roomData;
-		this.UserName = roomData.getUserNameList()[0];
+		this.UserName = parent.getUserName();
 		setResizable(false);
 		setBounds(0, 0, 350, 550);
 		setTitle(resources.Strings.BUGI_TALK);
@@ -209,9 +209,8 @@ public class ChatClientRoom extends JFrame {
 				ChatRoom cr = new ChatRoom(roomData.getRoomId(), roomData.getUserNames());
 				cr.setChatImg(selectIcon);
 				cm.setRoomData(cr);
-				// cm.setTime(calcTime()); // 이건 서버에서 계산해서 저장
 
-				// 이미지 사이즈 조정 -- 나중에 실행해보고 안되면 수정
+				// 이미지 사이즈 조정 
 //				Image selectImg = selectIcon.getImage();
 //				int width, height;
 //				double ratio;
@@ -285,143 +284,16 @@ public class ChatClientRoom extends JFrame {
 		return this.UserName;
 	}
 
+	// keyboard enter key
+	class TextSendAction implements ActionListener {
 
-	
-	
-	/**
-	 * Create the frame.
-	 * @return 
-	 */
-//	public ChatClientChat(ChatClientMain parent, String username, int room_id, String userlist) {
-//		
-//		lastTime = ""; oldTime = "";
-//		newUser = ""; oldUser = "";
-//	
-//			//???
-//		textArea = new JTextPane();
-//		textArea.setEditable(false);
-//		textArea.setFont(new Font("���� ���", Font.PLAIN, 13));
-//		scrollPane.setViewportView(textArea);
-//		
-//		
-//		// ä�� �޽��� �Է� 
-//		txtInput = new JTextField();
-//		txtInput.setBounds(50, 415, 200, 30);
-//		txtInput.setFont(new Font("���� ���", Font.PLAIN, 13));
-//		contentPane.add(txtInput);
-//		txtInput.setColumns(10);
-//		
-//		
-//		
-//		// ä�� �޽��� ������ ��ư
-//		btnSend = new JButton(new ImageIcon("src/btnIcons/send.png"));
-//		btnSend.setBounds(293, 414, 32, 32);
-//		btnSend.setFont(new Font("���� ���", Font.BOLD, 13));
-//		btnSend.setBackground(backColor);
-//		btnSend.setBorderPainted(false);
-//		contentPane.add(btnSend);
-//
-//		// �̸�Ƽ�� �̹��� ��������
-//		emoticonbtns[0] = new JButton(emoticons[0] = new ImageIcon("src/emoticons/����.png"));
-//		emoticonbtns[0].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[0], "(����)"));
-//		emoticonbtns[1] = new JButton(emoticons[1] = new ImageIcon("src/emoticons/����.png"));
-//		emoticonbtns[1].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[1], "(����)"));
-//		emoticonbtns[2] = new JButton(emoticons[2] = new ImageIcon("src/emoticons/�ȳ�.png"));
-//		emoticonbtns[2].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[2], "(�ȳ�)"));
-//		emoticonbtns[3] = new JButton(emoticons[3] = new ImageIcon("src/emoticons/�߰�.png"));
-//		emoticonbtns[3].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[3], "(�߰�)"));
-//		emoticonbtns[4] = new JButton(emoticons[4] = new ImageIcon("src/emoticons/����.png"));
-//		emoticonbtns[4].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[4], "(����)"));
-//		emoticonbtns[5] = new JButton(emoticons[5] = new ImageIcon("src/emoticons/�Ϳ���.png"));
-//		emoticonbtns[5].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[5], "(�Ϳ���)"));
-//		emoticonbtns[6] = new JButton(emoticons[6] = new ImageIcon("src/emoticons/����.png"));
-//		emoticonbtns[6].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[6], "(����)"));
-//		emoticonbtns[7] = new JButton(emoticons[7] = new ImageIcon("src/emoticons/����.png"));
-//		emoticonbtns[7].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[7], "(����)"));
-//		emoticonbtns[8] = new JButton(emoticons[8] = new ImageIcon("src/emoticons/��ǳ����.png"));
-//		emoticonbtns[8].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[8], "(��ǳ����)"));
-//		emoticonbtns[9] = new JButton(emoticons[9] = new ImageIcon("src/emoticons/ȭ��.png"));
-//		emoticonbtns[9].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[9], "(ȭ��)"));
-//		emoticonbtns[10] = new JButton(emoticons[10] = new ImageIcon("src/emoticons/���.png"));
-//		emoticonbtns[10].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[10], "(���)"));
-//		emoticonbtns[11] = new JButton(emoticons[11] = new ImageIcon("src/emoticons/�ñ�.png"));
-//		emoticonbtns[11].setPreferredSize(new Dimension(100, 100));
-//		emoticonVec.add(new Emoticon(emoticons[11], "(�ñ�)"));
-//
-//		for(int i=0;i<emoticonbtns.length;i++) {
-//			int j=i;
-//			emoticonbtns[i].addActionListener(new ActionListener() {
-//				@Override
-//				public void actionPerformed(ActionEvent e) {
-//					ImageIcon icon = (ImageIcon)((JButton)e.getSource()).getIcon();
-//					// TODO Auto-generated method stub
-//					ChatMsg emo = new ChatMsg(UserName, "400", emoticonVec.elementAt(j).name);
-//					emo.setEmoticon(icon);
-//					emo.setRoomId(RoomId);
-//					emo.setTime(calcTime());
-//					mainView.SendObject(emo);
-//					emoView.setVisible(false);
-//					
-//					
-//				}
-//			});
-//		}
-//
-//	
-//		this.addWindowListener(new WindowListener() {
-//
-//            @Override
-//            public void windowOpened(WindowEvent e) {
-//            }
-//
-//            @Override
-//            public void windowIconified(WindowEvent e) {
-//            }
-//
-//            @Override
-//            public void windowDeiconified(WindowEvent e) {
-//            }
-//
-//            @Override
-//            public void windowDeactivated(WindowEvent e) {
-//            }
-//
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//				
-//            }
-//
-//            @Override
-//            public void windowClosed(WindowEvent e) {
-//            }
-//
-//            @Override
-//            public void windowActivated(WindowEvent e) {
-//            }
-//        });
-		
-		// keyboard enter key 
-				class TextSendAction implements ActionListener {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						System.out.println("here");
-						if (e.getSource() == btnSend || e.getSource() == txtInput) {
-							String msg = null;
-							msg = txtInput.getText().trim();
-							System.out.println(msg);
-							
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == btnSend || e.getSource() == txtInput) {
+				String msg = null;
+				msg = txtInput.getText().trim();
+				System.out.println(msg);
+
 //							for(int i=0;i<emoticonVec.size();i++) {
 //								Emoticon emo = emoticonVec.elementAt(i);
 //								if(emo.name.equals(msg)) { // (����)
@@ -436,18 +308,17 @@ public class ChatClientRoom extends JFrame {
 //									return;
 //								}
 //							}
-							ChatMsg obcm = new ChatMsg(UserName, "200", msg);
-							roomData.setLastTime(calcTime());
-							obcm.setRoomData(roomData);
-							parent.SendObject(obcm);
-							
-							txtInput.setText(""); 
-							txtInput.requestFocus(); 
-						
-						}
-					}
-				}
+				ChatMsg obcm = new ChatMsg(UserName, "200", msg);
+				roomData.setLastTime(calcTime());
+				obcm.setRoomData(roomData);
+				parent.SendObject(obcm);
 
+				txtInput.setText("");
+				txtInput.requestFocus();
+
+			}
+		}
+	}
 
 //		
 //			
@@ -624,7 +495,7 @@ public class ChatClientRoom extends JFrame {
 //			}
 //		}
 //
-	// ȭ�� ������ ���
+	// 채팅 메시지 보내기
 	public void AppendMessage(ChatMsg chatMsg) {
 		int MSG_TEXT = 0;
 		int MSG_IMAGE = 1;
@@ -654,7 +525,7 @@ public class ChatClientRoom extends JFrame {
 			chatPanel.setPreferredSize(new Dimension(200, calculatePanelHeight()));
 			chatPanel.validate();
 			chatPanel.repaint();
-
+			scrollPane.repaint();
 		}
 
 	}
@@ -838,13 +709,13 @@ public class ChatClientRoom extends JFrame {
 
 	public int calculatePanelHeight() {
 		int itemCount = 0;
-
+		int itemHeight = 100;
 		for (int i = 0; i < chatPanel.getComponentCount(); i++) {
 			if (chatPanel.getComponent(i) instanceof ChattingItem) {
+				// itemHeight = chatPanel.getComponent(i).getHeight();
 				itemCount++;
 			}
 		}
-		int itemHeight = 100;
 		int spacing = 10;
 		return itemCount * (itemHeight + spacing);
 	}

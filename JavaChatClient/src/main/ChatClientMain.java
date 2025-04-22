@@ -301,10 +301,8 @@ public class ChatClientMain extends JFrame {
 						// 해당하는 채팅방에 메시지를 출력
 						for(int i=0;i<openChatViewVec.size();i++) { // 현재 열려있는 채팅방 중에
 							ChatClientRoom view = openChatViewVec.elementAt(i);
-							System.out.println(view.getRoomId()+", "+cm.getRoomData().getRoomId());
 							if(view.getRoomId() == cm.getRoomData().getRoomId()) {
 								view.AppendMessage(cm);
-								System.out.println("client main-200");
 							}
 							
 						}

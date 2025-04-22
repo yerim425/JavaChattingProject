@@ -44,5 +44,9 @@ public abstract class BaseView extends JPanel {
 
 	}
 	
+	public String getUserName() {
+		return this.userName;
+	}
+	
 
 }
